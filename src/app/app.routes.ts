@@ -16,6 +16,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register').then((m) => m.Register),
+  },
+  {
     path: '',
     loadComponent: () => import('./pages/layout/layout').then((m) => m.Layout),
     children: [
@@ -30,5 +35,12 @@ export const routes: Routes = [
           import('./pages/employee/employee').then((m) => m.Employee),
       },
     ],
+  },
+
+  // Catch all route
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./pages/not-found/not-found').then((m) => m.NotFound),
   },
 ];

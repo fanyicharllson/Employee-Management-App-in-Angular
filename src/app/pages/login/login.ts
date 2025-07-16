@@ -6,12 +6,12 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,9 +20,11 @@ export class Login {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
-  /*loading variable for ui*/
-  loading = signal(false);
+  showPassword = false;
+  isLoading = false;
+  loginError = '';
 
   loginForm = this.fb.group({
     email: [
@@ -32,35 +34,45 @@ export class Login {
         Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/),
       ],
     ],
-
-    password: ['', Validators.required],
+    password: ['', [Validators.required, Validators.minLength(8)]],
+    remember: [false],
   });
 
-  onLogin() {
-    if (this.loginForm.invalid) return;
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 
-    this.loading.set(true);
+  onSubmit() {
+    if (this.loginForm.valid) {
+      this.isLoading = true;
+      this.loginError = '';
 
-    this.http
-      .post(
-        'https://projectapi.gerasim.in/api/EmployeeManagement/login',
-        this.loginForm.value,
-      )
-      .subscribe({
-        next: (res: any) => {
-          this.loading.set(false);
-          if (res.result) {
-            this.router.navigateByUrl('dashboard').then(() => {
-              console.log('Navigation success');
-            });
-          } else {
-            alert(res.message);
-          }
-        },
-        error: () => {
-          this.loading.set(false);
-          alert('Something went wrong! Please try again later.');
-        },
+      // Simulate API call
+      setTimeout(() => {
+        // Simulate login logic
+        const { email, password } = this.loginForm.value;
+
+        // Mock authentication check
+        if (email === 'demo@company.com' && password === 'password') {
+          console.log('Login successful:', this.loginForm.value);
+          this.isLoading = false;
+          // Handle successful login here (redirect, etc.)
+          alert('Login successful!');
+        } else {
+          this.loginError = 'Invalid email or password. Please try again.';
+          this.isLoading = false;
+        }
+      }, 1500);
+    } else {
+      // Mark all fields as touched to show validation errors
+      Object.keys(this.loginForm.controls).forEach((key) => {
+        this.loginForm.get(key)?.markAsTouched();
       });
+    }
+  }
+
+  // Navigate back to the previous page
+  navigateBack() {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 }

@@ -1,0 +1,119 @@
+<nav class="fixed top-0 w-full z-50 bg-purple-500 shadow-2xl">
+  <div class="container mx-auto px-6 py-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2 cursor-pointer">
+        <div
+          class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center"
+        >
+          <svg
+            class="w-6 h-6 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            ></path>
+          </svg>
+        </div>
+        <span class="text-xl font-bold text-white">EmpowerHR</span>
+      </div>
+      <!-- Desktop nav item -->
+      <div class="hidden md:flex items-center space-x-8">
+        @for (nav of navItems; track nav.id) {
+          @if (nav.page) {
+            <a
+              [routerLink]="nav.id"
+              class="text-white hover:text-purple-300 transition-colors cursor-pointer"
+            >
+              {{ nav.text }}
+            </a>
+          } @else {
+            <a
+              role="button"
+              tabindex="0"
+              (click)="ScrollTo($event, nav.id)"
+              (keydown.enter)="ScrollTo($event, nav.id)"
+              class="text-white hover:text-purple-300 transition-colors cursor-pointer"
+            >
+              {{ nav.text }}
+            </a>
+          }
+        }
+        <button
+          class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-purple-50 transition-colors cursor-pointer"
+          (click)="navigateToRegister()"
+        >
+          Get Started
+        </button>
+      </div>
+      <!-- Mobile Menu Button -->
+      <button
+        (click)="toggleMobileMenu()"
+        class="md:hidden p-2 rounded-lg hover:bg-purple-800 transition-colors cursor-pointer"
+      >
+        <svg
+          class="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          @if (!isMobileMenuOpen) {
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          }
+          @if (isMobileMenuOpen) {
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          }
+        </svg>
+      </button>
+    </div>
+    <!-- Mobile item -->
+    <div
+      [class.max-h-0]="!isMobileMenuOpen"
+      [class.max-h-96]="isMobileMenuOpen"
+      class="md:hidden transition-all duration-300 overflow-hidden"
+    >
+      <div class="py-4 space-y-2 border-t border-purple-100">
+        @for (item of navItems; track item.text) {
+          @if (item.page) {
+            <a
+              [routerLink]="item.id"
+              class="block px-4 py-2 text-white hover:bg-purple-800 rounded-lg transition-colors cursor-pointer"
+            >
+              {{ item.text }}
+            </a>
+          } @else {
+            <a
+              role="button"
+              tabindex="0"
+              (click)="closeMobileMenu(); ScrollTo($event, item.id)"
+              (keydown.enter)="ScrollTo($event, item.id)"
+              class="block px-4 py-2 text-white hover:bg-purple-800 rounded-lg transition-colors cursor-pointer"
+            >
+              {{ item.text }}
+            </a>
+          }
+        }
+        <button
+          class="w-full mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-6 py-2 rounded-full font-semibold cursor-pointer"
+          (click)="navigateToRegister()"
+        >
+          Get Started
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

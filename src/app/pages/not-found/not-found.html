@@ -1,0 +1,45 @@
+<div
+  class="flex flex-col items-center justify-center min-h-screen bg-white px-6 text-center"
+>
+  <!-- SVG Illustration -->
+  <svg
+    class="w-64 h-64 mb-8"
+    fill="none"
+    viewBox="0 0 512 512"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="256" cy="256" fill="#F3E8FF" r="256" />
+    <path d="M176 232h160v48H176v-48z" fill="#A855F7" />
+    <path
+      d="M176 208a24 24 0 0 1 24-24h112a24 24 0 0 1 24 24v96a24 24 0 0 1-24 24H200a24 24 0 0 1-24-24v-96z"
+      fill="none"
+      stroke="#7C3AED"
+      stroke-width="12"
+    />
+    <text
+      class="text-purple-700 font-bold text-xl"
+      dominant-baseline="middle"
+      text-anchor="middle"
+      x="50%"
+      y="58%"
+    >
+      404
+    </text>
+  </svg>
+
+  <!-- Message -->
+  <h1 class="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
+    Page Not Found
+  </h1>
+  <p class="text-gray-600 mb-6 max-w-md">
+    The page you’re looking for doesn’t exist or has been moved.
+  </p>
+
+  <!-- CTA Button -->
+  <a
+    class="inline-block px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition duration-300"
+    routerLink="/landingPage"
+  >
+    ← Back to Home
+  </a>
+</div>
