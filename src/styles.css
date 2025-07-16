@@ -1,6 +1,37 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import 'ngx-toastr/toastr';
 
 * {
   font-family: "Inter", sans-serif;
+}
+
+/* Custom Toastr Styles */
+
+/* Base toast styling */
+.toast-container .ngx-toastr {
+  width: 350px !important;
+  min-height: 60px !important;
+  border-radius: 8px !important;
+  padding: 15px 20px !important;
+  margin-bottom: 15px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  position: relative !important;
+}
+
+/* Custom colors */
+.toast-purple {
+  background-color: #7e22ce !important;
+  color: white !important;
+}
+
+.toast-warning {
+  background-color: #dc2626 !important;
+  color: white !important;
+}
+
+/* Progress bar */
+.toast-progress {
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  height: 3px !important;
 }

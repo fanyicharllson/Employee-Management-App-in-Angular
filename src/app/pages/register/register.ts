@@ -3,6 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import {
+  notOnlyNumbersValidator,
+  properCompanyNameValidator,
+} from '../../helper/UserNameCompanyNameValidator';
 
 @Component({
   selector: 'app-register',
@@ -28,9 +32,9 @@ export class Register {
       ],
     ],
     password: ['', [Validators.required, Validators.minLength(8)]],
-    companyName: ['', Validators.required],
-    fullName: ['', Validators.required],
-    phone: ['', Validators.required],
+    companyName: ['', [Validators.required, properCompanyNameValidator()]],
+    fullName: ['', [Validators.required, notOnlyNumbersValidator()]],
+    // phone: ['', Validators.required],    // TEMPORARILY COMMENTED
     companySize: ['', Validators.required],
     terms: [false, Validators.requiredTrue],
   });

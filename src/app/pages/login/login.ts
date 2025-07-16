@@ -8,6 +8,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ export class Login {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toastr = inject(ToastrService);
 
   showPassword = false;
   isLoading = false;
@@ -62,7 +64,7 @@ export class Login {
           this.loginError = 'Invalid email or password. Please try again.';
           this.isLoading = false;
         }
-      }, 1500);
+      }, 10000);
     } else {
       // Mark all fields as touched to show validation errors
       Object.keys(this.loginForm.controls).forEach((key) => {
@@ -74,5 +76,13 @@ export class Login {
   // Navigate back to the previous page
   navigateBack() {
     this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  //show toastr notification
+  showSuccess() {
+    this.toastr.info(
+      'Service currently not avaliable! Please sign in with your credentials',
+      'Info',
+    );
   }
 }
