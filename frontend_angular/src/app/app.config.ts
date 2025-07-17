@@ -16,7 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideAnimations(), 
+    provideAnimations(),
     provideToastr({
       positionClass: 'toast-top-right',
       preventDuplicates: true,
@@ -26,6 +26,6 @@ export const appConfig: ApplicationConfig = {
       extendedTimeOut: 2000,
       disableTimeOut: false,
       tapToDismiss: true,
-    })
+    }),
   ],
 };

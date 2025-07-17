@@ -35,3 +35,29 @@
   background-color: rgba(255, 255, 255, 0.3) !important;
   height: 3px !important;
 }
+
+/* Custom scrollbar with new colors */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+}
+
+/* Scrollbar Thumb */
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #8e44ad, #6c5ce7);
+  /* softer purples */
+  border-radius: 6px;
+}
+
+/* On Hover */
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #7d3cbf, #5a4bcf);
+}
+
+::-webkit-scrollbar-thumb {
+  transition: background 0.3s ease;
+}
