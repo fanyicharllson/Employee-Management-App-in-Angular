@@ -1,7 +1,4 @@
 
----
-
-```markdown
 # 🧑‍💼 Employee Management System
 
 A full-stack **Employee Management System** built with **Angular** and **Spring Boot**, designed to streamline the process of managing employees, roles, and departments in a modern web interface.
@@ -118,9 +115,6 @@ PRs and suggestions are welcome! If you'd like to contribute, fork the repo and 
 
 MIT License © [A Product of CharlseEmpire Tech](https://github.com/fanyicharllson)
 
----
-
----
 
 ## 👨‍💻 Built By
 
@@ -128,4 +122,3 @@ MIT License © [A Product of CharlseEmpire Tech](https://github.com/fanyicharlls
 *Builder & CTO-Minded Software Architect*
 [CharlseEmpire Tech](https://charlseempire.netlify.app/landing-page)
 
-```
