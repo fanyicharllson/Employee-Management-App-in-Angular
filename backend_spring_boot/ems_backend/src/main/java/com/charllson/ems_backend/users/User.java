@@ -7,11 +7,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +24,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity
+@Table(name = "users")
 public class User implements UserDetails {
 
     @jakarta.persistence.Id
@@ -36,8 +39,10 @@ public class User implements UserDetails {
     )
     private Long Id;
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
+    @Column(unique = true)
     private String phone;
     private String companyName;
     private String fullName;
@@ -46,7 +51,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(name = "terms_accepted")
     private Boolean termsAccepted;
+    
     private Boolean locked;
     private Boolean enabled;
 
