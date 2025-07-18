@@ -13,13 +13,14 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       maximum-pool-size: 20
+      max-lifetime: 30000 # 30 seconds
+      connection-timeout: 10000
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
   flyway:
     enabled: true
