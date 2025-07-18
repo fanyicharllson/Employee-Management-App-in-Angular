@@ -53,7 +53,7 @@ public class User implements UserDetails {
 
     @Column(name = "terms_accepted")
     private Boolean termsAccepted;
-    
+
     private Boolean locked;
     private Boolean enabled;
 
@@ -94,7 +94,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return fullName;
+        return email;
     }
 
     @Override
