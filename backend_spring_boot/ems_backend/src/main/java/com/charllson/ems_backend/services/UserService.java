@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.model.token.ConfirmationToken;
 import com.charllson.ems_backend.respository.UserRepository;
@@ -32,7 +33,7 @@ public class UserService implements UserDetailsService {
     }
 
     // SignUp User
-    public String signUpUser(User user) {
+    public ApiResponse signUpUser(User user) {
         boolean userExists = userRepository.findByEmail(user.getEmail()).isPresent();
         if (userExists) {
             throw new BadRequestException("Email already exists. Please use a different email.");
@@ -55,11 +56,13 @@ public class UserService implements UserDetailsService {
 
         // Send email
 
-        return token;
+        return new ApiResponse(true, "User registered successfully. Please check your email to confirm your account.",
+                token);
     }
 
     public void enableUser(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("User not found"));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found! Please sign up to continue 🤗."));
         user.setEnabled(true);
         userRepository.save(user);
     }

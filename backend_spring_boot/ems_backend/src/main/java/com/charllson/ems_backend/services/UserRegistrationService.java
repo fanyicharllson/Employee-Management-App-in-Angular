@@ -2,6 +2,7 @@ package com.charllson.ems_backend.services;
 
 import org.springframework.stereotype.Service;
 
+import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.helpers.EmailValidaor;
 import com.charllson.ems_backend.helpers.UserRegistrationRequest;
@@ -25,7 +26,7 @@ public class UserRegistrationService {
         this.userService = userService;
     }
 
-    public String register(UserRegistrationRequest userRegistrationRequest) {
+    public ApiResponse register(UserRegistrationRequest userRegistrationRequest) {
         boolean isValidEmail = emailValidaor.test(userRegistrationRequest.getEmail());
         if (!isValidEmail) {
             throw new BadRequestException("Invalid email address.");
@@ -47,7 +48,7 @@ public class UserRegistrationService {
     }
 
     @Transactional
-    public String confirmToken(String token) {
+    public ApiResponse confirmToken(String token) {
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).orElseThrow(() -> new BadRequestException("Invalid token. Please request a new one."));
 
         if(confirmationToken.getConfirmedAt() != null) {
@@ -61,7 +62,8 @@ public class UserRegistrationService {
         confirmationToken.setConfirmedAt(java.time.LocalDateTime.now());
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         userService.enableUser(confirmationToken.getUser().getEmail());
-        return "Confirmed";
+        
+        return new ApiResponse(true, "Email confirmed successfully");
     }
 
 
