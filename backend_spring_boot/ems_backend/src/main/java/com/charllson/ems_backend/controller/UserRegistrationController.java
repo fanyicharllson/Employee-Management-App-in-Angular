@@ -1,8 +1,10 @@
 package com.charllson.ems_backend.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.charllson.ems_backend.helpers.UserRegistrationRequest;
@@ -20,6 +22,11 @@ public class UserRegistrationController {
     @PostMapping
     public String register(@RequestBody UserRegistrationRequest userRegistrationRequest) {
         return userRegistrationService.register(userRegistrationRequest);
+    }
+
+    @GetMapping(path = "confirm-token")
+    public String confirmToken(@RequestParam("token") String token) {
+        return userRegistrationService.confirmToken(token);
     }
     
 }

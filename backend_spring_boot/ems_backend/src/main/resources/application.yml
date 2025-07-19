@@ -15,11 +15,13 @@ spring:
       maximum-pool-size: 20
       max-lifetime: 30000 # 30 seconds
       connection-timeout: 10000
+    driver-class-name: org.postgresql.Driver  
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
   flyway:
