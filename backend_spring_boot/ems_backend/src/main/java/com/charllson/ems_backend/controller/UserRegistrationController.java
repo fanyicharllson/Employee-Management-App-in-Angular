@@ -33,4 +33,10 @@ public class UserRegistrationController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping(path = "resend-token")
+    public ResponseEntity<ApiResponse> resendToken(@RequestParam("email") String email) {
+        ApiResponse response = userRegistrationService.resendConfirmationEmail(email);
+        return ResponseEntity.ok(response);
+    }
+
 }

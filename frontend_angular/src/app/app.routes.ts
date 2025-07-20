@@ -21,6 +21,13 @@ export const routes: Routes = [
       import('./pages/register/register').then((m) => m.Register),
   },
   {
+    path: 'check-email',
+    loadComponent: () =>
+      import('./auth/email-verification/email-verification').then(
+        (m) => m.EmailVerification,
+      ),
+  },
+  {
     path: '',
     loadComponent: () => import('./pages/layout/layout').then((m) => m.Layout),
     children: [

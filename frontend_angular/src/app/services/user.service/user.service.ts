@@ -12,9 +12,21 @@ import { environment } from '../../../environments/environment';
 })
 export class UserService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiBaseUrl}/user-registration`;
+  private apiUrl = `${environment.apiBaseUrl}`;
 
+  // Register user
   registerUser(payload: RegistrationPayload): Observable<ApiResponse> {
-    return this.http.post<ApiResponse>(`${this.apiUrl}`, payload);
+    return this.http.post<ApiResponse>(
+      `${this.apiUrl}/user-registration`,
+      payload,
+    );
+  }
+
+  // Resend token
+  resendToken(email: string): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(
+      `${this.apiUrl}/user-registration/resend-token?email=${encodeURIComponent(email)}`,
+      {},
+    );
   }
 }

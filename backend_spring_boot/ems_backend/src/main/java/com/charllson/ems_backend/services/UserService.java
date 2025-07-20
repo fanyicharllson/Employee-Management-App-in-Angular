@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
         // Send email
         emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
 
-        return new ApiResponse(true, "User registered successfully. Please check your email to confirm your account.",
+        return new ApiResponse(true, "Registered successfully! Redirecting...",
                 token);
     }
 

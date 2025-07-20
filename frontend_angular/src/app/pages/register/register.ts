@@ -21,7 +21,7 @@ export class Register {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private userService = inject(UserService);
-  // private location = inject(Location)
+
   showPassword = false;
   isSubmitting = false;
   showSuccess = false;
@@ -67,8 +67,6 @@ export class Register {
         hasAcceptTerms: formValue.hasAcceptTerms ?? false,
       };
 
-      console.log('Form Data: ', formData);
-
       this.userService.registerUser(formData).subscribe({
         next: (response: ApiResponse) => {
           this.isSubmitting = false;
@@ -80,8 +78,9 @@ export class Register {
 
             setTimeout(() => {
               this.showSuccess = false;
-              this.router.navigate(['/login']);
-            }, 5000);
+              localStorage.setItem('registeredEmail', formData.email);
+              this.router.navigate(['/check-email']);
+            }, 2000);
           } else {
             // how error message
             this.errorMessage = `Something went wrong: ${response.message}`;
@@ -96,8 +95,7 @@ export class Register {
         error: (error) => {
           this.isSubmitting = false;
           console.error('Registration failed:', error);
-
-          // Try to get backend error message
+          // backend error message
           this.errorMessage =
             error?.error?.message || 'Registration failed. Please try again.';
           this.showError = true;

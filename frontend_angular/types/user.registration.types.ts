@@ -11,5 +11,6 @@ export interface RegistrationPayload {
 export interface ApiResponse {
   success: boolean;
   message: string;
+  code?: string;
   value?: string;
 }

@@ -1,12 +1,18 @@
 package com.charllson.ems_backend.services;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
+import com.charllson.ems_backend.email.EmailHtml;
+import com.charllson.ems_backend.email.EmailSender;
 import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.helpers.EmailValidaor;
 import com.charllson.ems_backend.helpers.UserRegistrationRequest;
 import com.charllson.ems_backend.model.token.ConfirmationToken;
+import com.charllson.ems_backend.respository.UserRepository;
 import com.charllson.ems_backend.users.User;
 import com.charllson.ems_backend.users.UserRole;
 
@@ -18,13 +24,24 @@ public class UserRegistrationService {
     private final EmailValidaor emailValidaor;
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
+    private final UserRepository userRepository;
+    private final EmailHtml emailHtml;
+    private final EmailSender emailSender;
 
     // Constructor injection
-    public UserRegistrationService(EmailValidaor emailValidaor, UserService userService,
-            ConfirmationTokenService confirmationTokenService) {
+    public UserRegistrationService(
+            EmailValidaor emailValidaor,
+            UserService userService,
+            ConfirmationTokenService confirmationTokenService,
+            UserRepository userRepository,
+            EmailHtml emailHtml,
+            EmailService emailSender) {
         this.confirmationTokenService = confirmationTokenService;
         this.emailValidaor = emailValidaor;
         this.userService = userService;
+        this.userRepository = userRepository;
+        this.emailHtml = emailHtml;
+        this.emailSender = emailSender;
     }
 
     public ApiResponse register(UserRegistrationRequest userRegistrationRequest) {
@@ -68,6 +85,31 @@ public class UserRegistrationService {
         userService.enableUser(confirmationToken.getUser().getEmail());
 
         return new ApiResponse(true, "Email confirmed successfully");
+    }
+
+    @Transactional
+    public ApiResponse resendConfirmationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("User not found! Please sign up to continue 🤗."));
+
+        if (user.isEnabled()) {
+            throw new BadRequestException("Account already verified. Please log in.", "ACCOUNT_ALREADY_VERIFIED");
+        }
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(
+                token,
+                LocalDateTime.now(),
+                LocalDateTime.now().plusMinutes(15),
+                user,
+                null);
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        String emailLink = "http://localhost:8080/api/v1/user-registration/confirm-token?token=" + token;
+        emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
+
+        return new ApiResponse(true, "Verification email resent successfully! Please check your inbox.", token);
     }
 
 }

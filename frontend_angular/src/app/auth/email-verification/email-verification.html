@@ -1,0 +1,67 @@
+<app-show-notification
+  [showSuccess]="showSuccess"
+  [successMessage]="successMessage"
+  [showError]="showError"
+  [errorMessage]="errorMessage"
+></app-show-notification>
+
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-purple-900 text-white"
+>
+  <div class="text-center p-8 bg-white/10 rounded-xl shadow-lg w-full max-w-md max-sm:w-[90%]">
+    <!-- Animated bouncing mail icon -->
+    <div class="flex justify-center mb-6 animate-bounce">
+      <div class="text-6xl">✉️</div>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-2">Verify Your Email</h2>
+
+    <p class="text-sm text-gray-200 mb-4">
+      We've sent a verification link to <strong>{{ maskedEmail }}</strong
+      >. Please check your inbox and click the link to verify your email
+      address. If you don't see the email, check your spam folder.
+      <span class="block text-red-500 bg-red-100 p-1 rounded-md mt-3 text-sm"
+        >Verification Link expires in 15 minutes!</span
+      >
+    </p>
+
+    <!-- Resend button with timer and loading spinner -->
+    <button
+      (click)="resendEmail()"
+      [disabled]="resendDisabled || isLoading"
+      class="mt-4 bg-purple-700 hover:bg-purple-800 px-6 py-2 rounded-lg text-white transition duration-300 relative disabled:opacity-50 cursor-pointer"
+    >
+      <ng-container *ngIf="!isLoading">
+        {{
+          resendDisabled
+            ? "Resend in " + timer + "s"
+            : "Resend Verification Email"
+        }}
+      </ng-container>
+
+      <span *ngIf="isLoading" class="flex items-center justify-center gap-2">
+        <svg
+          class="w-4 h-4 animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v1m6.364 1.636l-.707.707M20 12h-1m-1.636 6.364l-.707-.707M12 20v-1m-6.364-1.636l.707-.707M4 12h1m1.636-6.364l.707.707"
+          />
+        </svg>
+        Sending...
+      </span>
+    </button>
+
+    <div *ngIf="successMessage" class="mt-4 text-green-300">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="mt-4 text-red-300">
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>
