@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -7,22 +6,32 @@ import {
   notOnlyNumbersValidator,
   properCompanyNameValidator,
 } from '../../helper/UserNameCompanyNameValidator';
+import { UserService } from '../../services/user.service/user.service';
+import { ApiResponse } from '../../../../types/user.registration.types';
+import { ShowNotification } from '../../component/show-notification/show-notification';
 
 @Component({
   selector: 'app-register',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ShowNotification],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
-
+  private userService = inject(UserService);
+  // private location = inject(Location)
   showPassword = false;
   isSubmitting = false;
+  showSuccess = false;
 
+  successMessage = '';
+  showError = false;
+  errorMessage = '';
+
+  // Form for user registration
+  //  It contains fields like email, password, company name, full name, phone,
   registrationForm = this.fb.group({
     email: [
       '',
@@ -36,32 +45,73 @@ export class Register {
     fullName: ['', [Validators.required, notOnlyNumbersValidator()]],
     // phone: ['', Validators.required],    // TEMPORARILY COMMENTED
     companySize: ['', Validators.required],
-    terms: [false, Validators.requiredTrue],
+    hasAcceptTerms: [false, Validators.requiredTrue],
   });
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
+  // Submit data to the backend
+  // If the form is valid, it will send the data to the backend
   onSubmit() {
     if (this.registrationForm.valid) {
       this.isSubmitting = true;
+      const formValue = this.registrationForm.value;
+      const formData = {
+        email: formValue.email ?? '',
+        password: formValue.password ?? '',
+        companyName: formValue.companyName ?? '',
+        fullName: formValue.fullName ?? '',
+        companySize: formValue.companySize ?? '',
+        hasAcceptTerms: formValue.hasAcceptTerms ?? false,
+      };
 
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Registration data:', this.registrationForm.value);
-        this.isSubmitting = false;
-        // Handle successful registration here
-        alert('Account created successfully!');
-      }, 2000);
+      console.log('Form Data: ', formData);
+
+      this.userService.registerUser(formData).subscribe({
+        next: (response: ApiResponse) => {
+          this.isSubmitting = false;
+          if (response.success) {
+            // Show success message
+            this.successMessage = response.message;
+            this.showSuccess = true;
+            this.showError = false;
+
+            setTimeout(() => {
+              this.showSuccess = false;
+              this.router.navigate(['/login']);
+            }, 5000);
+          } else {
+            // how error message
+            this.errorMessage = `Something went wrong: ${response.message}`;
+            this.showError = true;
+            this.showSuccess = false;
+
+            setTimeout(() => {
+              this.showError = false;
+            }, 2500);
+          }
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          console.error('Registration failed:', error);
+
+          // Try to get backend error message
+          this.errorMessage =
+            error?.error?.message || 'Registration failed. Please try again.';
+          this.showError = true;
+          this.showSuccess = false;
+        },
+      });
     } else {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.registrationForm.controls).forEach((key) => {
         this.registrationForm.get(key)?.markAsTouched();
       });
     }
   }
 
+  // Navigate back to the previous page
   navigateBack() {
     this.router.navigate(['../'], { relativeTo: this.route });
   }

@@ -1,0 +1,76 @@
+<!-- Success Notification -->
+<div
+  *ngIf="showSuccess"
+  class="fixed top-6 right-6 bg-green-100 border border-green-300 text-green-800 px-4 py-3 rounded-lg shadow-lg flex items-start gap-3 z-50 animate-fade-in-down"
+>
+  <!-- <svg
+    class="w-6 h-6 mt-0.5 text-green-500"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+  </svg> -->
+  <div class="flex-1">
+    <p class="font-medium">Success</p>
+    <p class="text-sm">{{ successMessage }}</p>
+  </div>
+  <button
+    (click)="showSuccess = false"
+    class="text-green-600 hover:text-green-800"
+  >
+    <svg
+      class="w-5 h-5 cursor-pointer"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  </button>
+</div>
+
+<!-- Error Notification -->
+<div
+  *ngIf="showError"
+  class="fixed top-6 right-6 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-lg flex items-start gap-3 z-50 animate-fade-in-down"
+>
+  <!-- <svg
+    class="w-6 h-6 mt-0.5 text-red-500"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M6 18L18 6M6 6l12 12"
+    />
+  </svg> -->
+  <div class="flex-1">
+    <p class="font-medium">Error</p>
+    <p class="text-sm">{{ errorMessage }}</p>
+  </div>
+  <button (click)="showError = false" class="text-red-600 hover:text-red-800">
+    <svg
+      class="w-5 h-5 cursor-pointer"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18L18 6M6 6l12 12"
+      />
+    </svg>
+  </button>
+</div>

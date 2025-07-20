@@ -20,7 +20,8 @@ public class UserRegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
 
     // Constructor injection
-    public UserRegistrationService(EmailValidaor emailValidaor, UserService userService, ConfirmationTokenService confirmationTokenService) {
+    public UserRegistrationService(EmailValidaor emailValidaor, UserService userService,
+            ConfirmationTokenService confirmationTokenService) {
         this.confirmationTokenService = confirmationTokenService;
         this.emailValidaor = emailValidaor;
         this.userService = userService;
@@ -31,27 +32,30 @@ public class UserRegistrationService {
         if (!isValidEmail) {
             throw new BadRequestException("Invalid email address.");
         }
+        if (userRegistrationRequest.getHasAcceptTerms() == null || !userRegistrationRequest.getHasAcceptTerms()) {
+            throw new BadRequestException("You must accept the terms to register.");
+        }
         return userService.signUpUser(
                 new User(
-                        userRegistrationRequest.getFullName(), 
-                        userRegistrationRequest.getFullName(), 
-                        userRegistrationRequest.getEmail(), 
+                        userRegistrationRequest.getFullName(),
+                        userRegistrationRequest.getFullName(),
+                        userRegistrationRequest.getEmail(),
                         userRegistrationRequest.getPassword(),
                         null,
-                        userRegistrationRequest.getCompanyName(), 
-                        userRegistrationRequest.getCompanySize(), 
+                        userRegistrationRequest.getCompanyName(),
+                        userRegistrationRequest.getCompanySize(),
                         UserRole.HR,
                         userRegistrationRequest.getHasAcceptTerms(),
-                        false, 
-                        false 
-                ));
+                        false,
+                        false));
     }
 
     @Transactional
     public ApiResponse confirmToken(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).orElseThrow(() -> new BadRequestException("Invalid token. Please request a new one."));
+        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token)
+                .orElseThrow(() -> new BadRequestException("Invalid token. Please request a new one."));
 
-        if(confirmationToken.getConfirmedAt() != null) {
+        if (confirmationToken.getConfirmedAt() != null) {
             throw new BadRequestException("Email already confirmed. Please log in.");
         }
 
@@ -62,10 +66,8 @@ public class UserRegistrationService {
         confirmationToken.setConfirmedAt(java.time.LocalDateTime.now());
         confirmationTokenService.saveConfirmationToken(confirmationToken);
         userService.enableUser(confirmationToken.getUser().getEmail());
-        
+
         return new ApiResponse(true, "Email confirmed successfully");
     }
-
-
 
 }
