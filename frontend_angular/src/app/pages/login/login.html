@@ -1,3 +1,10 @@
+<app-show-notification
+  [showSuccess]="showSuccess"
+  [successMessage]="successMessage"
+  [showError]="showError"
+  [errorMessage]="errorMessage"
+></app-show-notification>
+
 <div class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50">
   <div class="flex min-h-screen">
     <!-- Left Side - Motivational Content -->
@@ -373,7 +380,7 @@
           <button
             type="button"
             class="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-500 bg-white hover:bg-gray-50 transition-colors"
-            (click)="showSuccess()"
+            (click)="showSuccessS()"
           >
             <svg class="w-5 h-5" viewBox="0 0 24 24">
               <path

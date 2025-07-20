@@ -3,6 +3,7 @@ package com.charllson.ems_backend.services;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.charllson.ems_backend.email.EmailHtml;
@@ -16,10 +17,14 @@ import com.charllson.ems_backend.respository.UserRepository;
 import com.charllson.ems_backend.users.User;
 import com.charllson.ems_backend.users.UserRole;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
 public class UserRegistrationService {
+
+    @Value("${app.base-url:}")
+    private String baseUrl;
 
     private final EmailValidaor emailValidaor;
     private final UserService userService;
@@ -42,6 +47,14 @@ public class UserRegistrationService {
         this.userRepository = userRepository;
         this.emailHtml = emailHtml;
         this.emailSender = emailSender;
+    }
+
+    @PostConstruct
+    private void validateBaseUrl() {
+        if (baseUrl == null || baseUrl.isBlank()) {
+            System.out.println("Missing app.base-url config! " + baseUrl);
+            throw new IllegalStateException("Missing app.base-url config!");
+        }
     }
 
     public ApiResponse register(UserRegistrationRequest userRegistrationRequest) {
@@ -106,7 +119,8 @@ public class UserRegistrationService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        String emailLink = "http://localhost:8080/api/v1/user-registration/confirm-token?token=" + token;
+        String emailLink = baseUrl + "/confirm-token?token=" + token;
+
         emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
 
         return new ApiResponse(true, "Verification email resent successfully! Please check your inbox.", token);

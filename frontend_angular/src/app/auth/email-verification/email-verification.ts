@@ -107,13 +107,13 @@ export class EmailVerification implements OnInit {
         this.showSuccess = false;
         if (code === 'ACCOUNT_ALREADY_VERIFIED') {
           localStorage.removeItem('registeredEmail');
-          this.router.navigate(['/login']);
+          this.errorMessage =
+            'Account verified already! Redirecting to login...';
+          this.showError = true;
+          this.showSuccess = false;
           setTimeout(() => {
-            this.errorMessage =
-              'Your account is already verified. Please log in.';
-            this.showError = true;
-            this.showSuccess = false;
-          }, 1000);
+            this.router.navigate(['/login']);
+          }, 2500);
         }
       },
     });

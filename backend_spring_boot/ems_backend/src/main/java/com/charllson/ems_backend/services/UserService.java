@@ -3,6 +3,7 @@ package com.charllson.ems_backend.services;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,11 +18,14 @@ import com.charllson.ems_backend.model.token.ConfirmationToken;
 import com.charllson.ems_backend.respository.UserRepository;
 import com.charllson.ems_backend.users.User;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
+
+    @Value("${app.base-url:}")
+    private String baseUrl;
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -58,7 +62,7 @@ public class UserService implements UserDetailsService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        String emailLink = "http://localhost:8080/api/v1/user-registration/confirm-token?token=" + token;
+        String emailLink = baseUrl + "/confirm-token?token=" + token;
         // Send email
         emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
 

@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -9,10 +10,11 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { ShowNotification } from '../../component/show-notification/show-notification';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ShowNotification],
   templateUrl: './login.html',
   styleUrls: ['./login.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +30,13 @@ export class Login {
   isLoading = false;
   loginError = '';
 
+  // Notification
+  showSuccess = false;
+  successMessage = '';
+  showError = false;
+  errorMessage = '';
+
+  // Login form binding
   loginForm = this.fb.group({
     email: [
       '',
@@ -79,7 +88,7 @@ export class Login {
   }
 
   //show toastr notification
-  showSuccess() {
+  showSuccessS() {
     this.toastr.info(
       'Service currently not avaliable! Please sign in with your credentials',
       'Info',
