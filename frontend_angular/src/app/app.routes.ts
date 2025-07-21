@@ -27,6 +27,14 @@ export const routes: Routes = [
         (m) => m.EmailVerification,
       ),
   },
+  // Verify email route
+  {
+    path: 'confirm-email/:token',
+    loadComponent: () =>
+      import('./pages/confirm-email/confirm-email').then((m) => m.ConfirmEmail),
+  },
+
+  // Dashboard route
   {
     path: '',
     loadComponent: () => import('./pages/layout/layout').then((m) => m.Layout),

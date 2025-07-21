@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        String emailLink = baseUrl + "/confirm-token?token=" + token;
+        String emailLink = baseUrl + "/confirm-email/token=" + token;
         // Send email
         emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
 

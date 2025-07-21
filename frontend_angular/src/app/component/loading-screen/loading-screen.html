@@ -1,0 +1,110 @@
+<div
+  class="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-purple-50 to-purple-100"
+>
+  <div class="text-center space-y-8">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="space-y-6" [@fadeInOut]>
+      <!-- Modern Spinner -->
+      <div class="relative">
+        <div class="w-16 h-16 mx-auto">
+          <!-- Outer ring -->
+          <div
+            class="absolute inset-0 border-4 border-purple-200 rounded-full"
+          ></div>
+          <!-- Spinning ring -->
+          <!-- <div
+            class="absolute inset-0 border-4 border-transparent border-t-purple-500 border-r-purple-400 rounded-full spinner"
+          ></div> -->
+          <!-- Inner glow -->
+          <div
+            class="absolute inset-2 bg-purple-500 rounded-full pulse-glow opacity-20 flex items-center justify-center"
+          >
+            <span class="text-white">Hang on tight buddy!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Message -->
+      <div class="space-y-3">
+        <h2 class="text-2xl font-bold gradient-text float">
+          {{ loadingMessage }}
+        </h2>
+        <p class="text-purple-600 text-sm font-medium">
+          {{ loadingSubtext }}
+        </p>
+      </div>
+
+      <!-- Progress Indicator -->
+      <div class="w-48 mx-auto">
+        <div class="bg-purple-200 rounded-full h-2 overflow-hidden">
+          <div
+            class="bg-gradient-to-r from-purple-500 to-purple-400 h-full rounded-full shimmer"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!isLoading && !hasError" class="space-y-4" [@fadeInOut]>
+      <div
+        class="w-16 h-16 mx-auto bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center"
+      >
+        <svg
+          class="w-8 h-8 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="3"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold gradient-text">
+        {{ successMessage }}
+      </h2>
+      <p class="text-purple-600 text-sm font-medium">
+        {{ successSubtext }}
+      </p>
+    </div>
+    <!-- Error State -->
+    <div *ngIf="!isLoading && hasError" class="space-y-4" [@fadeInOut]>
+      <div
+        class="w-16 h-16 mx-auto bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center"
+      >
+        <svg
+          class="w-8 h-8 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="3"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </div>
+      <h2
+        class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-700"
+      >
+        {{ errorMessage }}
+      </h2>
+      <p class="text-red-600 text-sm font-medium">
+        {{ errorSubtext }}
+      </p>
+
+      <button
+        *ngIf="showRetryButton"
+        (click)="onRetry()"
+        class="mt-4 px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg shadow-lg hover:from-red-600 hover:to-red-700 transform hover:scale-105 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-red-300 cursor-pointer"
+      >
+        Try Again
+      </button>
+    </div>
+  </div>
+</div>

@@ -6,7 +6,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
@@ -19,12 +18,15 @@ import { ShowNotification } from '../../component/show-notification/show-notific
   styleUrls: ['./login.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Login {
+export class Login implements OnInit {
   private fb = inject(FormBuilder);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toastr = inject(ToastrService);
+
+  ngOnInit(): void {
+    this.checkForNotification();
+  }
 
   showPassword = false;
   isLoading = false;
@@ -35,6 +37,39 @@ export class Login {
   successMessage = '';
   showError = false;
   errorMessage = '';
+
+  private checkForNotification(): void {
+    // Get notification from router state
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state || history.state;
+
+    if (state && state['notification']) {
+      this.showSuccess = true;
+      this.successMessage = state['notification'];
+      this.showError = false;
+      this.errorMessage = '';
+
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => {
+        this.hideNotification();
+      }, 5000);
+
+      // Clear the state to prevent showing notification on page refresh
+      this.clearNavigationState();
+    }
+  }
+
+  private clearNavigationState(): void {
+    // Replace current state to prevent notification from persisting on refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  hideNotification(): void {
+    this.showError = false;
+    this.errorMessage = '';
+    this.showSuccess = false;
+    this.successMessage = '';
+  }
 
   // Login form binding
   loginForm = this.fb.group({

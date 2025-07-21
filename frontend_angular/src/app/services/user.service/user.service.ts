@@ -17,7 +17,7 @@ export class UserService {
   // Register user
   registerUser(payload: RegistrationPayload): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
-      `${this.apiUrl}/user-registration`,
+      `${this.apiUrl}`,
       payload,
     );
   }
@@ -25,7 +25,14 @@ export class UserService {
   // Resend token
   resendToken(email: string): Observable<ApiResponse> {
     return this.http.post<ApiResponse>(
-      `${this.apiUrl}/user-registration/resend-token?email=${encodeURIComponent(email)}`,
+      `${this.apiUrl}/resend-token?email=${encodeURIComponent(email)}`,
+      {},
+    );
+  }
+
+  confirmEmail(token: string): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(
+      `${this.apiUrl}/confirm-token?${token}`,
       {},
     );
   }
