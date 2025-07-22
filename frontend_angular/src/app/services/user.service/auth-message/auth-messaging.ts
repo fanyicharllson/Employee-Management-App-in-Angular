@@ -50,4 +50,11 @@ export class AuthMessageService {
       reason: 'login_required',
     });
   }
+  setLogoutMessage(): void {
+    this.setMessage({
+      type: 'info',
+      message: 'You have been logged out. You can log in to continue.',
+      reason: 'logout',
+    });
+  }
 }

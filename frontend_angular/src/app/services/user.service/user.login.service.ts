@@ -1,8 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap, catchError, of, throwError } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  tap,
+  catchError,
+  of,
+  throwError,
+} from 'rxjs';
 import { User, LoginResponse } from '../../../../types/user.login.types';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
+import { AuthMessageService } from './auth-message/auth-messaging';
 
 @Injectable({
   providedIn: 'root',
@@ -11,6 +20,8 @@ export class UserloginService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private http = inject(HttpClient);
+  private router = inject(Router);
+  private authMessageService = inject(AuthMessageService);
   private apiBaseUrl = `${environment.endapiBaseUrl}`;
   private isSessionVerified = false;
   private sessionVerificationPromise: Promise<boolean> | null = null;
@@ -56,10 +67,13 @@ export class UserloginService {
               return of(null);
             } else {
               // Network error or server error - don't clear session
-              console.warn('Session verification failed due to network/server error:', error);
+              console.warn(
+                'Session verification failed due to network/server error:',
+                error,
+              );
               return of(null);
             }
-          })
+          }),
         )
         .subscribe({
           next: (response) => {
@@ -77,7 +91,7 @@ export class UserloginService {
             this.isSessionVerified = true;
             resolve(false);
             this.sessionVerificationPromise = null;
-          }
+          },
         });
     });
 
@@ -96,7 +110,7 @@ export class UserloginService {
       .post<LoginResponse>(
         `${this.apiBaseUrl}/login`,
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true },
       )
       .pipe(
         tap((response) => {
@@ -104,7 +118,7 @@ export class UserloginService {
             this.setCurrentUser(response.user);
             this.isSessionVerified = true;
           }
-        })
+        }),
       );
   }
 
@@ -122,21 +136,29 @@ export class UserloginService {
   }
 
   logout(): void {
+    console.log('Logging out user...');
+
     this.currentUserSubject.next(null);
     localStorage.removeItem('currentUser');
     this.isSessionVerified = false;
     this.sessionVerificationPromise = null;
-    
+
     this.http
       .post(`${this.apiBaseUrl}/logout`, {}, { withCredentials: true })
       .subscribe({
         error: (error) => {
           console.warn('Logout request failed:', error);
-          // Continue with logout even if server request fails
-        }
+          // Continue logout even if server request fails
+        },
+        complete: () => {
+          this.router
+            .navigateByUrl('/', { skipLocationChange: true })
+            .then(() => {
+              this.router.navigate(['/login']);
+            });
+        },
       });
   }
-
   // Check if user appears to be logged in (has localStorage data)
   hasStoredUser(): boolean {
     return localStorage.getItem('currentUser') !== null;

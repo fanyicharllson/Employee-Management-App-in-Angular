@@ -282,7 +282,6 @@ export class Dashboard implements OnInit {
     // Handle sign out logic
     console.log('Signing out...');
     this.userloginService.logout();
-     this.router.navigate(['/login']);
     this.closeProfileMenu();
   }
 
