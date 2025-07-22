@@ -28,15 +28,8 @@ import lombok.Setter;
 public class User implements UserDetails {
 
     @jakarta.persistence.Id
-    @SequenceGenerator(
-        name = "user_sequence",
-        sequenceName = "user_sequence",
-        allocationSize = 1
-    )
-    @GeneratedValue(
-        strategy = jakarta.persistence.GenerationType.SEQUENCE,
-        generator = "user_sequence"
-    )
+    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.SEQUENCE, generator = "user_sequence")
     private Long Id;
     private String name;
     @Column(unique = true)
@@ -57,17 +50,17 @@ public class User implements UserDetails {
     private Boolean locked;
     private Boolean enabled;
 
-    public User(String name, 
-                String fullName, 
-                String email, 
-                String password, 
-                String phone, 
-                String companyName,
-                String companySize, 
-                UserRole userRole, 
-                Boolean termsAccepted, 
-                Boolean locked, 
-                Boolean enabled) {
+    public User(String name,
+            String fullName,
+            String email,
+            String password,
+            String phone,
+            String companyName,
+            String companySize,
+            UserRole userRole,
+            Boolean termsAccepted,
+            Boolean locked,
+            Boolean enabled) {
         this.phone = phone;
         this.companyName = companyName;
         this.companySize = companySize;
@@ -95,6 +88,10 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public String getRole() {
+        return userRole.name();
     }
 
     @Override

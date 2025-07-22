@@ -35,3 +35,10 @@ export interface StatCard {
   color: string;
   icon: string;
 }
+
+export interface ProfileRoute {
+  icon: LucideIconData;
+  text: string;
+  route: string;
+  btn?: boolean;
+}

@@ -33,11 +33,17 @@ public class UserService implements UserDetailsService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailHtml emailHtml;
     private final static String USER_NOT_FOUND_MSG = "user with this email %s not found";
+    private final JwtService jwtService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, email)));
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
 
     // SignUp User
@@ -75,6 +81,19 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new BadRequestException("User not found! Please sign up to continue 🤗."));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    // This method is called in your /login endpoint
+    public String authenticateAndGenerateToken(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Invalid credentials! Please try again."));
+
+        if (!bCryptPasswordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new BadRequestException("Invalid credentials! Please try again.");
+        }
+
+        // Use email or ID or both in JWT claims
+        return jwtService.generateToken(user);
     }
 
 }

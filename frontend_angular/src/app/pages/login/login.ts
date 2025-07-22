@@ -1,15 +1,20 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
-  signal,
+  OnDestroy,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { ShowNotification } from '../../component/show-notification/show-notification';
+import { UserloginService } from '../../services/user.service/user.login.service';
+import { finalize } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
+import { AuthMessageService } from '../../services/user.service/auth-message/auth-messaging';
 
 @Component({
   selector: 'app-login',
@@ -18,25 +23,141 @@ import { ShowNotification } from '../../component/show-notification/show-notific
   styleUrls: ['./login.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Login implements OnInit {
+export class Login implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private toastr = inject(ToastrService);
+  private userloginService = inject(UserloginService);
+  private authMessageService = inject(AuthMessageService); // Add this
+  private cdr = inject(ChangeDetectorRef);
+  private destroy$ = new Subject<void>();
+
+  constructor() {
+    // Don't call handleRouteParams here - wait for ngOnInit
+  }
 
   ngOnInit(): void {
+    this.handleRouteParams();
+    this.checkExistingSession();
     this.checkForNotification();
+    this.subscribeToAuthMessages(); 
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   showPassword = false;
   isLoading = false;
   loginError = '';
+  isCheckingSession = true;
 
   // Notification
   showSuccess = false;
   successMessage = '';
   showError = false;
   errorMessage = '';
+
+  // session message
+  sessionExpired = false;
+
+  private async checkExistingSession(): Promise<void> {
+    // If user has stored data, verify if session is still valid
+    if (this.userloginService.hasStoredUser()) {
+      try {
+        const isValid = await this.userloginService.verifySession();
+        if (isValid) {
+          // User is already logged in, redirect to dashboard
+          this.router.navigate(['/dashboard']);
+          return;
+        } else {
+          // Session expired, show message
+          this.showSessionExpiredMessage();
+        }
+      } catch (error) {
+        console.warn('Session verification failed:', error);
+        // Continue to login form
+      }
+    }
+
+    this.isCheckingSession = false;
+    this.cdr.detectChanges();
+  }
+
+  private showSessionExpiredMessage(): void {
+    this.sessionExpired = true;
+    this.showError = true;
+    this.errorMessage = 'Your session has expired. Please log in again.';
+    this.cdr.detectChanges(); // Force change detection
+
+    // Auto-hide after 5s
+    setTimeout(() => {
+      this.hideNotification();
+    }, 5000);
+  }
+
+  private handleRouteParams(): void {
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        // Handle session expired
+        if (params['sessionExpired'] === 'true') {
+          this.hideNotification();
+          this.showSessionExpiredMessage();
+          this.clearQueryParams(['sessionExpired']);
+        }
+
+        // Handle unauthorized access from AuthGuard
+        if (params['redirectReason'] === 'unauthorized') {
+          this.hideNotification();
+          this.showUnauthorizedMessage();
+          this.clearQueryParams(['redirectReason']);
+        }
+
+        // Handle access required
+        if (params['access'] === 'required') {
+          this.hideNotification();
+          this.showAccessRequiredMessage();
+          this.clearQueryParams(['access']);
+        }
+      });
+  }
+
+  private showUnauthorizedMessage(): void {
+    this.showError = true;
+    this.errorMessage = 'Please log in to access this page.';
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, 5000);
+  }
+
+  private showAccessRequiredMessage(): void {
+    this.showError = true;
+    this.errorMessage = 'Authentication required. Please log in to continue.';
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      this.hideNotification();
+    }, 5000);
+  }
+
+  private clearQueryParams(params: string[]): void {
+    const queryParamsToRemove: any = {};
+    params.forEach((param) => {
+      queryParamsToRemove[param] = null;
+    });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: queryParamsToRemove,
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
 
   private checkForNotification(): void {
     // Get notification from router state
@@ -48,6 +169,7 @@ export class Login implements OnInit {
       this.successMessage = state['notification'];
       this.showError = false;
       this.errorMessage = '';
+      this.cdr.detectChanges(); // Force change detection
 
       // Auto-hide notification after 5 seconds
       setTimeout(() => {
@@ -69,6 +191,37 @@ export class Login implements OnInit {
     this.errorMessage = '';
     this.showSuccess = false;
     this.successMessage = '';
+    this.sessionExpired = false;
+    this.cdr.detectChanges(); // Force change detection
+  }
+
+  private subscribeToAuthMessages(): void {
+    this.authMessageService.message$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((authMessage) => {
+        if (authMessage) {
+          this.hideNotification();
+
+          if (authMessage.type === 'error') {
+            this.showError = true;
+            this.errorMessage = authMessage.message;
+          } else if (authMessage.type === 'warning') {
+            this.showError = true;
+            this.errorMessage = authMessage.message;
+          } else if (authMessage.type === 'info') {
+            this.showSuccess = true;
+            this.successMessage = authMessage.message;
+          }
+
+          this.cdr.detectChanges();
+
+          // Auto-hide after 5 seconds
+          setTimeout(() => {
+            this.hideNotification();
+            this.authMessageService.clearMessage(); // Clear the message
+          }, 5000);
+        }
+      });
   }
 
   // Login form binding
@@ -91,30 +244,88 @@ export class Login implements OnInit {
   onSubmit() {
     if (this.loginForm.valid) {
       this.isLoading = true;
-      this.loginError = '';
+      this.clearAllMessages();
 
-      // Simulate API call
-      setTimeout(() => {
-        // Simulate login logic
-        const { email, password } = this.loginForm.value;
+      const { email, password } = this.loginForm.value;
 
-        // Mock authentication check
-        if (email === 'demo@company.com' && password === 'password') {
-          console.log('Login successful:', this.loginForm.value);
-          this.isLoading = false;
-          // Handle successful login here (redirect, etc.)
-          alert('Login successful!');
-        } else {
-          this.loginError = 'Invalid email or password. Please try again.';
-          this.isLoading = false;
-        }
-      }, 10000);
+      if (!email || !password) {
+        this.loginError = 'Email and password are required';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+
+      this.userloginService
+        .login(email, password)
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          }),
+        )
+        .subscribe({
+          next: (response) => {
+            console.log('User info:', response.user);
+            console.log('Current user role is: ', response.user.role);
+
+            this.toastr.success(
+              `Welcome back, ${response.user.name}!`,
+              'Login Successful!',
+            );
+
+            this.showSuccess = true;
+            this.successMessage = response.message;
+            this.cdr.detectChanges();
+
+            setTimeout(() => {
+              this.router.navigate(['/dashboard']);
+            }, 1000);
+          },
+          error: (error) => {
+            console.error('Login failed:', error);
+
+            if (error.status === 401) {
+              this.loginError = 'Invalid email or password';
+              this.showError = true;
+              this.errorMessage =
+                'Invalid credentials. Please check your email and password.';
+            } else if (error.status === 500) {
+              this.loginError = 'Server error. Please try again later.';
+              this.showError = true;
+              this.errorMessage = 'Server error. Please try again later.';
+            } else {
+              this.loginError =
+                error.error?.error || 'Login failed. Please try again.';
+              this.showError = true;
+              this.errorMessage = this.loginError;
+            }
+
+            this.cdr.detectChanges(); // Force change detection after error
+
+            setTimeout(() => {
+              this.hideNotification();
+            }, 5000);
+          },
+        });
     } else {
-      // Mark all fields as touched to show validation errors
       Object.keys(this.loginForm.controls).forEach((key) => {
         this.loginForm.get(key)?.markAsTouched();
       });
+
+      this.showError = true;
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      this.cdr.detectChanges();
     }
+  }
+
+  private clearAllMessages(): void {
+    this.loginError = '';
+    this.sessionExpired = false;
+    this.showError = false;
+    this.showSuccess = false;
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.cdr.detectChanges();
   }
 
   // Navigate back to the previous page
@@ -122,11 +333,20 @@ export class Login implements OnInit {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
-  //show toastr notification
+  // Show toastr notification
   showSuccessS() {
     this.toastr.info(
-      'Service currently not avaliable! Please sign in with your credentials',
+      'Service currently not available! Please sign in with your credentials',
       'Info',
     );
+  }
+
+  getCurrentUser() {
+    return this.userloginService.getCurrentUser();
+  }
+
+  // Optional: Method to check if user is logged in
+  isLoggedIn(): boolean {
+    return this.userloginService.getCurrentUser() !== null;
   }
 }

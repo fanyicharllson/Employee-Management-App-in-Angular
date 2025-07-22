@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   SidebarItem,
@@ -6,24 +6,31 @@ import {
   Task,
   ChartData,
   StatCard,
+  ProfileRoute,
 } from '../../../../types/types.dashboard';
 import { CommonModule } from '@angular/common';
 import {
+  ArrowLeftFromLine,
   BarChart3,
   Bell,
   Calendar,
   Clock,
   DollarSign,
   File,
+  HelpCircleIcon,
   LucideAngularModule,
   MenuSquare,
   MessageSquare,
   Plus,
   Search,
+  Settings,
   User,
+  UserIcon,
   UserPlus,
   X,
 } from 'lucide-angular';
+import { UserloginService } from '../../services/user.service/user.login.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,12 +38,20 @@ import {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   searchControl = new FormControl('');
 
   // Signals for state management
   activeTab = signal('Dashboard');
   isMobileSidebarOpen = signal(false);
+  isProfileMenuOpen = signal(false);
+
+  private userloginService = inject(UserloginService);
+  private router = inject(Router);
+  currentUser$ = this.userloginService.currentUser$;
+
+  username: string = '';
+  role: string = '';
 
   // Dashboard icons
   readonly Users = User;
@@ -52,6 +67,30 @@ export class Dashboard {
   readonly Bell = Bell;
   readonly Search = Search;
   readonly X = X;
+  readonly Setting = Settings;
+  readonly Help = HelpCircleIcon;
+  readonly ArrowLeft = ArrowLeftFromLine;
+  readonly Profile = UserIcon;
+
+  ngOnInit() {
+    // Subscribe to user changes
+    this.currentUser$.subscribe((user) => {
+      if (user) {
+        console.log('Current user:', user.name, user.email);
+        this.username = user.name;
+        this.role = user.role;
+      } else {
+        console.log('No user is currently logged in.', user);
+      }
+    });
+
+    const user = this.userloginService.getCurrentUser();
+    if (user) {
+      console.log('User ID:', user.id);
+    } else {
+      console.log('No user is currently logged in.', user);
+    }
+  }
 
   sidebarItems = signal<SidebarItem[]>([
     { icon: this.Barchart, label: 'Dashboard', active: true },
@@ -163,6 +202,13 @@ export class Dashboard {
     },
   ]);
 
+  profileRoutes = signal<ProfileRoute[]>([
+    { text: 'Profile', route: 'profile', icon: this.Profile },
+    { text: 'Settings', route: 'setting', icon: this.Setting },
+    { text: 'Help', route: 'help', icon: this.Help },
+    { text: 'Sign Out', route: 'signout', btn: true, icon: this.ArrowLeft },
+  ]);
+
   // Computed values
   maxChartValue = computed(() => {
     return Math.max(...this.chartData().map((d) => d.value));
@@ -182,6 +228,14 @@ export class Dashboard {
         ? 'bg-purple-500 text-blue-600 border-r-2 border-pink-600'
         : 'text-gray-600 hover:bg-gray-50'
     }`;
+  }
+
+  toggleProfileMenu(): void {
+    this.isProfileMenuOpen.set(!this.isProfileMenuOpen());
+  }
+
+  closeProfileMenu(): void {
+    this.isProfileMenuOpen.set(false);
   }
 
   toggleMobileSideBar() {
@@ -222,5 +276,20 @@ export class Dashboard {
       default:
         return baseClass + 'bg-gray-100 text-gray-700';
     }
+  }
+
+  handleSignOut(): void {
+    // Handle sign out logic
+    console.log('Signing out...');
+    this.userloginService.logout();
+     this.router.navigate(['/login']);
+    this.closeProfileMenu();
+  }
+
+  handleProfileClick(profileItem: ProfileRoute): void {
+    // Handle regular profile menu clicks
+    console.log('Navigating to:', profileItem.route);
+    // this.router.navigate([profileItem.route]);
+    this.closeProfileMenu();
   }
 }
