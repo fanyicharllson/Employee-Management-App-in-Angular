@@ -265,7 +265,10 @@
     </header>
 
     <!-- Dashboard Content -->
-    <main class="p-4 sm:p-6 lg:p-10 overflow-y-auto">
+    <main class="p-4 sm:p-3 overflow-y-auto">
+      <div class="p-1 mb-4 bg-purple-100 text-purple-600 max-w-64 rounded-lg font-bold italic">
+        {{ companyName + " Overview" }} 
+      </div>
       <!-- Stats Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
         @for (stat of statsCards(); track stat.title) {

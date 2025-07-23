@@ -77,7 +77,9 @@ public class UserRegistrationService {
                         UserRole.HR,
                         userRegistrationRequest.getHasAcceptTerms(),
                         false,
-                        false));
+                        false,
+                        true
+                        ));
     }
 
     @Transactional

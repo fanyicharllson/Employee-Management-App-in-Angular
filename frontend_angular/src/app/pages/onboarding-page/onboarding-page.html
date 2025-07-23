@@ -1,0 +1,528 @@
+<!-- onboarding.component.html -->
+<div class="w-full flex items-center justify-center px-8 py-16">
+  <div
+    class="absolute top-4 left-4 z-10 underline lg:text-white text-purple-600 cursor-pointer"
+    (click)="navigateBack()"
+  >
+    Go Back
+  </div>
+
+  <div class="max-w-2xl w-full">
+    <div class="text-center mb-8">
+      <div class="mb-4">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+            ></path>
+          </svg>
+        </div>
+      </div>
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">
+        Welcome to Your Journey! 🎉
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Let's set up your profile to personalize your EMS experience
+      </p>
+      <div class="mt-4 bg-purple-50 border border-purple-200 rounded-lg p-3">
+        <p class="text-sm text-purple-700">
+          <span class="font-semibold">{{ companyName }}</span> •
+          {{ companySize }} employees
+        </p>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="mb-8">
+      <div class="flex justify-between text-xs text-gray-500 mb-2">
+        <span>Step {{ currentStep }} of {{ totalSteps }}</span>
+        <span
+          >{{ Math.round((currentStep / totalSteps) * 100) }}% Complete</span
+        >
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-2">
+        <div
+          class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300 ease-out"
+          [style.width.%]="(currentStep / totalSteps) * 100"
+        ></div>
+      </div>
+    </div>
+
+    <form
+      [formGroup]="onboardingForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-6"
+    >
+      <!-- Step 1: Role & Department -->
+      <div *ngIf="currentStep === 1" class="space-y-6 animate-fadeIn">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">
+            Tell us about your role
+          </h3>
+          <p class="text-gray-600">This helps us customize your dashboard</p>
+        </div>
+
+        <!-- Job Title -->
+        <div>
+          <label
+            for="jobTitle"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Job Title
+          </label>
+          <input
+            type="text"
+            id="jobTitle"
+            [readonly]="true"
+            formControlName="jobTitle"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="e.g., HR Manager, Team Lead, etc."
+          />
+          <p class="text-sm text-gray-400 italic">
+            You are consider as HR by default when you create account.
+          </p>
+        </div>
+
+        <!-- Department -->
+        <div>
+          <label
+            for="department"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Department
+          </label>
+          <select
+            id="department"
+            formControlName="department"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+          >
+            <option value="">Select your department</option>
+            <option value="hr">Human Resources</option>
+            <option value="engineering">Engineering</option>
+            <option value="sales">Sales</option>
+            <option value="marketing">Marketing</option>
+            <option value="finance">Finance</option>
+            <option value="operations">Operations</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Role Type -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Current Role
+          </label>
+          <!-- Role -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- HR (only show if role is HR) -->
+            <label class="relative" *ngIf="currentRole === 'HR'">
+              <input
+                type="radio"
+                value="HR"
+                formControlName="roleType"
+                [checked]="true"
+                class="sr-only"
+              />
+              <div
+                class="border border-gray-300 rounded-xl p-4 transition-colors"
+                [class.border-purple-500]="true"
+                [class.bg-purple-50]="true"
+              >
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="w-6 h-6 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">HR</p>
+                    <p class="text-xs text-gray-500">
+                      I manage people and teams
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </label>
+
+            <!-- Employee (only show if role is employee) -->
+            <label class="relative" *ngIf="currentRole === 'employee'">
+              <input
+                type="radio"
+                value="employee"
+                formControlName="roleType"
+                [checked]="true"
+                class="sr-only"
+              />
+              <div
+                class="border border-gray-300 rounded-xl p-4 transition-colors"
+                [class.border-purple-500]="true"
+                [class.bg-purple-50]="true"
+              >
+                <div class="flex items-center">
+                  <div class="flex-shrink-0">
+                    <svg
+                      class="w-6 h-6 text-purple-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-gray-900">Employee</p>
+                    <p class="text-xs text-gray-500">I focus on my own work</p>
+                  </div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Team & Hiring Info -->
+      <div *ngIf="currentStep === 2" class="space-y-6 animate-fadeIn">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">
+            Team & Hiring Details
+          </h3>
+          <p class="text-gray-600">Help us understand your team structure</p>
+        </div>
+
+        <!-- Team Size -->
+        <div>
+          <label
+            for="teamSize"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Number of Employee
+          </label>
+          <input
+            type="text"
+            id="teamSize"
+            [readonly]="true"
+            formControlName="teamSize"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            placeholder="e.g., HR Manager, Team Lead, etc."
+          />
+          <p class="text-sm text-gray-400 italic">
+            You can modify this later in your dashboard.
+          </p>
+        </div>
+        <!-- Total Hires -->
+        <div>
+          <label
+            for="totalHires"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Total hires in the last 12 months
+          </label>
+          <input
+            type="number"
+            id="totalHires"
+            formControlName="totalHires"
+            min="0"
+            [attr.disabled]="isLoading ? true : null"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors disabled:opacity-50"
+            placeholder="Enter number of hires"
+          />
+        </div>
+
+        <!-- Salary Range -->
+        <div>
+          <label
+            for="salaryRange"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Your salary range (optional)
+          </label>
+          <select
+            id="salaryRange"
+            formControlName="salaryRange"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+          >
+            <option value="">Prefer not to say</option>
+            <option value="under-50k">Under $50,000</option>
+            <option value="50k-75k">$50,000 - $75,000</option>
+            <option value="75k-100k">$75,000 - $100,000</option>
+            <option value="100k-150k">$100,000 - $150,000</option>
+            <option value="150k-200k">$150,000 - $200,000</option>
+            <option value="over-200k">Over $200,000</option>
+          </select>
+        </div>
+
+        <!-- Years of Experience -->
+        <div>
+          <label
+            for="experience"
+            class="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Years of experience in your field
+          </label>
+          <select
+            id="experience"
+            formControlName="experience"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
+          >
+            <option value="">Select experience level</option>
+            <option value="0-2">0-2 years (Entry level)</option>
+            <option value="3-5">3-5 years (Mid level)</option>
+            <option value="6-10">6-10 years (Senior level)</option>
+            <option value="11-15">11-15 years (Expert level)</option>
+            <option value="15+">15+ years (Veteran)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Step 3: Preferences -->
+      <div *ngIf="currentStep === 3" class="space-y-6 animate-fadeIn">
+        <div class="text-center mb-6">
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">
+            Final touches
+          </h3>
+          <p class="text-gray-600">Let's personalize your experience</p>
+        </div>
+
+        <!-- Goals -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            What are your main goals with our EMS? (Select all that apply)
+          </label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                value="streamline-hiring"
+                (change)="onGoalChange($event)"
+                [checked]="isGoalSelected('streamline-hiring')"
+                class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700"
+                >Streamline hiring process</span
+              >
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                value="track-performance"
+                (change)="onGoalChange($event)"
+                [checked]="isGoalSelected('track-performance')"
+                class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700"
+                >Track employee performance</span
+              >
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                value="manage-payroll"
+                (change)="onGoalChange($event)"
+                [checked]="isGoalSelected('manage-payroll')"
+                class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700"
+                >Manage payroll efficiently</span
+              >
+            </label>
+            <label class="flex items-center">
+              <input
+                type="checkbox"
+                value="improve-engagement"
+                (change)="onGoalChange($event)"
+                [checked]="isGoalSelected('improve-engagement')"
+                class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+              />
+              <span class="ml-2 text-sm text-gray-700"
+                >Improve employee engagement</span
+              >
+            </label>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div>
+          <label class="flex items-center">
+            <input
+              type="checkbox"
+              formControlName="notifications"
+              class="rounded border-gray-300 text-purple-600 shadow-sm focus:border-purple-300 focus:ring focus:ring-purple-200 focus:ring-opacity-50"
+            />
+            <span class="ml-2 text-sm text-gray-700">
+              Send me helpful tips and updates about EMS features
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div
+        *ngIf="onboardingError"
+        class="p-3 bg-red-50 border border-red-200 rounded-lg"
+      >
+        <div class="flex items-center">
+          <svg
+            class="w-5 h-5 text-red-400 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <p class="text-sm text-red-600">{{ onboardingError }}</p>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="flex justify-between pt-6">
+        <!-- Prev btn -->
+        <button
+          *ngIf="currentStep > 1"
+          type="button"
+          (click)="previousStep()"
+          [disabled]="isLoading"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <span class="flex items-center">
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              ></path>
+            </svg>
+            Previous
+          </span>
+        </button>
+
+        <div *ngIf="currentStep === 1" class="flex-1"></div>
+
+        <!-- Next btn -->
+        <button
+          *ngIf="currentStep < totalSteps"
+          type="button"
+          (click)="nextStep()"
+          [disabled]="!isCurrentStepValid() || isLoading"
+          class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-8 rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <span class="flex items-center">
+            Next Step
+            <svg
+              class="w-4 h-4 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              ></path>
+            </svg>
+          </span>
+        </button>
+
+        <!-- Complete setup -->
+        <button
+          *ngIf="currentStep === totalSteps"
+          type="submit"
+          [disabled]="onboardingForm.invalid || isLoading"
+          class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-8 rounded-xl font-medium hover:from-green-700 hover:to-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <span *ngIf="!isLoading" class="flex items-center">
+            <svg
+              class="w-4 h-4 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              ></path>
+            </svg>
+            Complete Setup
+          </span>
+          <span *ngIf="isLoading" class="flex items-center">
+            <svg
+              class="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                class="opacity-25"
+              ></circle>
+              <path
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                class="opacity-75"
+              ></path>
+            </svg>
+            Setting up...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

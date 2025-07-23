@@ -277,9 +277,14 @@ export class Login implements OnInit, OnDestroy {
             this.successMessage = response.message;
             this.cdr.detectChanges();
 
-            setTimeout(() => {
+            console.log("Current onbaording: ", response.user.onboarding)
+
+            // Check if the uer is to redirect to obarding paage
+            if(response.user.onboarding) {
+              this.router.navigate(['/onboarding']);
+            } else {
               this.router.navigate(['/dashboard']);
-            }, 1000);
+            }
           },
           error: (error) => {
             console.error('Login failed:', error);

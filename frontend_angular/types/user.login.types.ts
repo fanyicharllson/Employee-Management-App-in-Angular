@@ -5,6 +5,7 @@ export interface User {
   role: string;
   companyName: string;
   companySize: string;
+  onboarding: boolean;
 }
 
 export interface LoginResponse {

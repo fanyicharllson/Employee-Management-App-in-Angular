@@ -49,6 +49,7 @@ public class User implements UserDetails {
 
     private Boolean locked;
     private Boolean enabled;
+    private Boolean onboarding;
 
     public User(String name,
             String fullName,
@@ -60,7 +61,8 @@ public class User implements UserDetails {
             UserRole userRole,
             Boolean termsAccepted,
             Boolean locked,
-            Boolean enabled) {
+            Boolean enabled,
+            Boolean onboarding) {
         this.phone = phone;
         this.companyName = companyName;
         this.companySize = companySize;
@@ -72,6 +74,7 @@ public class User implements UserDetails {
         this.password = password;
         this.name = name;
         this.fullName = fullName;
+        this.onboarding = onboarding;
     }
 
     @Override
@@ -92,6 +95,14 @@ public class User implements UserDetails {
 
     public String getRole() {
         return userRole.name();
+    }
+
+    public Long getId() {
+        return Id;
+    }
+
+    public boolean getOboarding() {
+        return onboarding;
     }
 
     @Override

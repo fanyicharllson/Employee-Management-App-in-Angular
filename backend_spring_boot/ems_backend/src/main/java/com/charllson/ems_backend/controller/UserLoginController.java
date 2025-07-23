@@ -61,7 +61,8 @@ public class UserLoginController {
                             "name", user.getName(),
                             "role", user.getRole(),
                             "companyName", user.getCompanyName(),
-                            "companySize", user.getCompanySize()));
+                            "companySize", user.getCompanySize(),
+                            "onboarding", user.getOnboarding()));
 
             return ResponseEntity.ok()
                     .header(HttpHeaders.SET_COOKIE, cookie.toString())

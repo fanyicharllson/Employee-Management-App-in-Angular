@@ -52,6 +52,8 @@ export class Dashboard implements OnInit {
 
   username: string = '';
   role: string = '';
+  companyName: string = '';
+  companySize: string = ''
 
   // Dashboard icons
   readonly Users = User;
@@ -76,20 +78,21 @@ export class Dashboard implements OnInit {
     // Subscribe to user changes
     this.currentUser$.subscribe((user) => {
       if (user) {
-        console.log('Current user:', user.name, user.email);
         this.username = user.name;
         this.role = user.role;
+        this.companyName = user.companyName;
+        this.companySize = user.companySize;
       } else {
         console.log('No user is currently logged in.', user);
       }
     });
 
     const user = this.userloginService.getCurrentUser();
-    if (user) {
-      console.log('User ID:', user.id);
-    } else {
-      console.log('No user is currently logged in.', user);
-    }
+    // if (user) {
+    //   console.log('User ID:', user.id);
+    // } else {
+    //   console.log('No user is currently logged in.', user);
+    // }
   }
 
   sidebarItems = signal<SidebarItem[]>([

@@ -38,12 +38,16 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MSG, email)));
+                .orElseThrow(() -> new BadRequestException(String.format(USER_NOT_FOUND_MSG, email)));
+    }
+
+    public User getById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .orElseThrow(() -> new BadRequestException("User not found with email: " + email));
     }
 
     // SignUp User
