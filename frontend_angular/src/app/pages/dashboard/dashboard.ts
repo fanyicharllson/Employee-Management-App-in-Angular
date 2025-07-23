@@ -31,6 +31,7 @@ import {
 } from 'lucide-angular';
 import { UserloginService } from '../../services/user.service/user.login.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,13 +48,15 @@ export class Dashboard implements OnInit {
   isProfileMenuOpen = signal(false);
 
   private userloginService = inject(UserloginService);
+  private toastr = inject(ToastrService);
+
   private router = inject(Router);
   currentUser$ = this.userloginService.currentUser$;
 
   username: string = '';
   role: string = '';
   companyName: string = '';
-  companySize: string = ''
+  companySize: string = '';
 
   // Dashboard icons
   readonly Users = User;
@@ -82,17 +85,15 @@ export class Dashboard implements OnInit {
         this.role = user.role;
         this.companyName = user.companyName;
         this.companySize = user.companySize;
+
+         this.toastr.success(
+              `Welcome back, ${user.name}!`,
+              'We are glad to have you on board!😘',
+            );
       } else {
         console.log('No user is currently logged in.', user);
       }
     });
-
-    const user = this.userloginService.getCurrentUser();
-    // if (user) {
-    //   console.log('User ID:', user.id);
-    // } else {
-    //   console.log('No user is currently logged in.', user);
-    // }
   }
 
   sidebarItems = signal<SidebarItem[]>([

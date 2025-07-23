@@ -17,7 +17,7 @@ export class OnBoardingService {
     onboardingData: OnboardingData,
   ): Promise<UserProfile> {
     try {
-      console.log("OnBoarding data", onboardingData)
+      // console.log("OnBoarding data", onboardingData)
       const response = await firstValueFrom(
         this.http.post<UserProfile>(
           `${this.apiUrl}/onboarding`,
@@ -27,7 +27,7 @@ export class OnBoardingService {
       );
 
       if (response) {
-        console.log("OnBoarding Response: ", response)
+        // console.log("OnBoarding Response: ", response)
         return response;
       }
       throw new Error('Invalid response from server');
