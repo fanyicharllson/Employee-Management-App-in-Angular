@@ -48,7 +48,7 @@ export class OnBoardingService {
       );
 
       if (response) {
-        console.log('OnBoarding Response: ', response);
+        // console.log('OnBoarding Response: ', response);
         return response;
       }
       throw new Error('Invalid response from server');
