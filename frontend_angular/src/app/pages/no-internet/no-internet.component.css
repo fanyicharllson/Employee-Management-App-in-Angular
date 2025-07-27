@@ -1,0 +1,26 @@
+@keyframes fade-in-up {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fade-in-up 0.6s ease-out;
+    }
+
+    /* Custom pulse animation for WiFi waves */
+    @keyframes wifi-pulse {
+      0%, 100% {
+        opacity: 0.3;
+        stroke-dasharray: 0, 100;
+      }
+      50% {
+        opacity: 0.1;
+        stroke-dasharray: 5, 5;
+      }
+    }
