@@ -1,0 +1,40 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+  @for (stat of statsCards(); track stat.title) {
+    <div
+      [class]="
+        'bg-gradient-to-r ' +
+        stat.color +
+        ' rounded-2xl p-6 text-white shadow-md hover:shadow-lg transition-all'
+      "
+    >
+      <div class="flex justify-between items-start mb-4">
+        <div>
+          <p class="text-white/80 text-sm">{{ stat.title }}</p>
+          <p class="text-3xl font-bold">
+            <ng-container *ngIf="!(loading$ | async); else loadingDots">
+              {{ stat.value }}
+            </ng-container>
+            <ng-template #loadingDots>
+              <span class="dot-loader !text-sm">
+                <span></span><span></span><span></span>
+              </span>
+            </ng-template>
+          </p>
+        </div>
+        <div class="bg-white/20 rounded-xl p-2">
+          <lucide-icon [img]="stat.icon"></lucide-icon>
+        </div>
+      </div>
+      <p class="text-white/70 text-sm">
+        <ng-container *ngIf="!(loading$ | async); else loadingDotsChange">
+          {{ stat.change }}
+        </ng-container>
+        <ng-template #loadingDotsChange>
+          <span class="dot-loader">
+            <span></span><span></span><span></span>
+          </span>
+        </ng-template>
+      </p>
+    </div>
+  }
+</div>

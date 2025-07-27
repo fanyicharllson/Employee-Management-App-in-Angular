@@ -30,10 +30,10 @@ export interface ChartData {
 
 export interface StatCard {
   title: string;
-  value: string;
+  value: number | string;
   change: string;
   color: string;
-  icon: string;
+  icon: LucideIconData;
 }
 
 export interface ProfileRoute {
@@ -41,4 +41,18 @@ export interface ProfileRoute {
   text: string;
   route: string;
   btn?: boolean;
+}
+
+export interface OnboardingResponse {
+  jobTitle: string;
+  department: string;
+  roleType: string; // or enum if you have one
+  teamSize: string;
+  totalHires: number;
+  salaryRange: number;
+  experience: string;
+  goals: string[];
+  notifications: boolean;
+  onboarding: boolean;
+  createdAt: string; // ISO date string
 }

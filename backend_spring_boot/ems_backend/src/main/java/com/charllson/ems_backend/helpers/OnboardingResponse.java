@@ -1,6 +1,8 @@
 package com.charllson.ems_backend.helpers;
 
 import com.charllson.ems_backend.users.UserRole;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -14,5 +16,7 @@ public record OnboardingResponse(
         String experience,
         List<String> goals,
         boolean notifications,
-        boolean onboarding) {
+        boolean onboarding,
+        LocalDateTime createdAt
+        ) {
 }

@@ -32,10 +32,12 @@ import {
 import { UserloginService } from '../../services/user.service/user.login.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { OnBoardingService } from '../../services/onboarding.service/on-boarding.service';
+import { StatsCard } from '../../component/stats-card/stats-card';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule],
+  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, StatsCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -48,15 +50,21 @@ export class Dashboard implements OnInit {
   isProfileMenuOpen = signal(false);
 
   private userloginService = inject(UserloginService);
+  private onboardingService = inject(OnBoardingService);
   private toastr = inject(ToastrService);
-
   private router = inject(Router);
   currentUser$ = this.userloginService.currentUser$;
+
+  onboardingData$ = this.onboardingService.getOnboarding();
+  loading$ = this.onboardingService.loading$;
 
   username: string = '';
   role: string = '';
   companyName: string = '';
   companySize: string = '';
+  totalHires: number = 0;
+  salaryRange: string = '';
+  totalEmplpoyees: number = 0;
 
   // Dashboard icons
   readonly Users = User;
@@ -86,14 +94,19 @@ export class Dashboard implements OnInit {
         this.companyName = user.companyName;
         this.companySize = user.companySize;
 
-         this.toastr.success(
-              `Welcome back, ${user.name}!`,
-              'We are glad to have you on board!😘',
-            );
+        this.toastr.success(
+          `Welcome back, ${user.name}!`,
+          'We are glad to have you on board!😘',
+        );
       } else {
         console.log('No user is currently logged in.', user);
       }
     });
+  }
+
+  //Call to refresh onboarding data
+  refreshData() {
+    this.onboardingData$ = this.onboardingService.getOnboarding(true);
   }
 
   sidebarItems = signal<SidebarItem[]>([
@@ -181,30 +194,7 @@ export class Dashboard implements OnInit {
     { month: 'Jun', value: 35 },
     { month: 'Jul', value: 50 },
   ]);
-
-  statsCards = signal<StatCard[]>([
-    {
-      title: 'Total Employees',
-      value: '104',
-      change: '+12% from last month',
-      color: 'from-blue-500 to-blue-600',
-      icon: 'users',
-    },
-    {
-      title: 'New Hires',
-      value: '1,839',
-      change: '+8% from last month',
-      color: 'from-purple-500 to-purple-600',
-      icon: 'user-plus',
-    },
-    {
-      title: 'Total Salary',
-      value: '$324,890.89',
-      change: '+15% from last month',
-      color: 'from-emerald-500 to-emerald-600',
-      icon: 'dollar-sign',
-    },
-  ]);
+  
 
   profileRoutes = signal<ProfileRoute[]>([
     { text: 'Profile', route: 'profile', icon: this.Profile },

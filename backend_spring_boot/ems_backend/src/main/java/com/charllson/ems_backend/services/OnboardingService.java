@@ -73,6 +73,7 @@ public class OnboardingService {
                 oBoarding.getExperience(),
                 oBoarding.getGoals(),
                 oBoarding.isNotifications(),
-                oBoarding.isOnboarding());
+                oBoarding.isOnboarding(),
+                oBoarding.getCreatedAt());
     }
 }

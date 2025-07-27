@@ -9,9 +9,9 @@
         <div
           class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center"
         >
-          <span class="text-white font-bold text-sm">EM</span>
+          <span class="text-white font-bold text-sm">TN</span>
         </div>
-        <span class="text-xl font-bold whitespace-nowrap">EmPowerHR</span>
+        <span class="text-xl font-bold whitespace-nowrap">TeamNest</span>
       </div>
     </div>
 
@@ -70,7 +70,7 @@
     <!-- Header -->
     <div class="px-6 py-5 border-b border-white/10">
       <div class="flex items-center justify-between">
-        <span class="text-xl font-bold">EmPowerHR</span>
+        <span class="text-xl font-bold">TeamNest</span>
         <button (click)="closeMobileSidebar()">
           <lucide-icon [img]="X" class="text-white"></lucide-icon>
         </button>
@@ -149,9 +149,7 @@
 
         <div>
           <h1 class="text-2xl font-bold text-gray-900">{{ activeTab() }}</h1>
-          <p class="text-gray-500 text-sm">
-            Welcome back, {{ username }}
-          </p>
+          <p class="text-gray-500 text-sm">Welcome back, {{ username }}</p>
         </div>
 
         <!-- Search bar and create btn -->
@@ -190,7 +188,9 @@
                 <h3 class="text-right leading-none mb-1 font-semibold">
                   {{ username }}
                 </h3>
-                <p class="text-sm opacity-60 leading-nonef font-bold">{{ role }}</p>
+                <p class="text-sm opacity-60 leading-nonef font-bold">
+                  {{ role }}
+                </p>
               </div>
               <div class="relative w-12 h-12 rounded-full overflow-hidden">
                 <img
@@ -266,32 +266,14 @@
 
     <!-- Dashboard Content -->
     <main class="p-4 sm:p-3 overflow-y-auto">
-      <div class="p-1 mb-4 bg-purple-100 text-purple-600 max-w-64 rounded-lg font-bold italic">
-        {{ companyName + " Overview" }} 
+      <div
+        class="p-1 text-sm mb-2 w-fit font-semibold rounded-lg text-gray-500 italic animate-pulse duration-300"
+      >
+       Company Name: {{ companyName }}
       </div>
+
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-        @for (stat of statsCards(); track stat.title) {
-          <div
-            [class]="
-              'bg-gradient-to-r ' +
-              stat.color +
-              ' rounded-2xl p-6 text-white shadow-md hover:shadow-lg transition-all'
-            "
-          >
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <p class="text-white/80 text-sm">{{ stat.title }}</p>
-                <p class="text-3xl font-bold">{{ stat.value }}</p>
-              </div>
-              <div class="bg-white/20 rounded-xl p-2">
-                <i [class]="'lucide-' + stat.icon"></i>
-              </div>
-            </div>
-            <p class="text-white/70 text-sm">{{ stat.change }}</p>
-          </div>
-        }
-      </div>
+      <app-stats-card />
 
       <!-- Chart + Employee List -->
       <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">

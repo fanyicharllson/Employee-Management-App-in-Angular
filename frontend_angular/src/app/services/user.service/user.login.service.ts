@@ -21,7 +21,6 @@ export class UserloginService {
   public currentUser$ = this.currentUserSubject.asObservable();
   private http = inject(HttpClient);
   private router = inject(Router);
-  private authMessageService = inject(AuthMessageService);
   private apiBaseUrl = `${environment.endapiBaseUrl}`;
   private isSessionVerified = false;
   private sessionVerificationPromise: Promise<boolean> | null = null;
