@@ -3,8 +3,10 @@ package com.charllson.ems_backend.services;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.charllson.ems_backend.email.EmailHtml;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.helpers.OnboardingRequest;
 import com.charllson.ems_backend.helpers.OnboardingResponse;
@@ -19,8 +21,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OnboardingService {
 
+      @Value("${app.base-url:}")
+     private String baseUrl;
+
     private final OnboardingRepository onboardingRepository;
     private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final EmailHtml emailHtml;
 
     public void saveOrUpdate(OnboardingRequest request, Long userId) {
         User user = userRepository.findById(userId)
@@ -45,6 +52,11 @@ public class OnboardingService {
         onboardingRepository.save(oBoarding);
         user.setOnboarding(request.onboarding()); // Update user's onboarding status to false
         userRepository.save(user);
+
+         String emailLink = baseUrl + "/dashboard";
+
+        String welcomeHtml =  emailHtml.buildWelcomeEmail(user.getFullName(), emailLink);
+        emailService.sendEmail(user.getEmail(), "[TeamNest] Welcome to TeamNest!", welcomeHtml);
     }
 
     public OnboardingResponse getByUserId(Long userId) {

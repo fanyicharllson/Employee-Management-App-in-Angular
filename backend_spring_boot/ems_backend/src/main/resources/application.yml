@@ -6,7 +6,7 @@ server:
 spring:
   config:
     import:
-    - optional:.env
+      - optional:.env
   datasource:
     url: ${DB_URL}
     username: postgres
@@ -15,7 +15,7 @@ spring:
       maximum-pool-size: 20
       max-lifetime: 30000 # 30 seconds
       connection-timeout: 10000
-    driver-class-name: org.postgresql.Driver  
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,11 +38,14 @@ spring:
         smtp:
           ssl:
             trust: "*"
-          auth: true 
+          auth: true
           starttls:
             enable: true
           connectiontimeout: 5000
           timeout: 3000
-          writetimeout: 5000   
+          writetimeout: 5000
 app:
-  base-url: http://localhost:4200
+  base-url: ${BASE_URL}
+resend:
+  api-key: ${RESEND_API_KEY}
+  from-email: ${RESEND_FROM_EMAIL}

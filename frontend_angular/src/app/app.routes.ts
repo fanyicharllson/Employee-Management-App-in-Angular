@@ -5,11 +5,11 @@ import { OnboardingGuard } from './core/guards/onboarding.guard';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'landingPage',
+    redirectTo: '',
     pathMatch: 'full',
   },
   {
-    path: 'landingPage',
+    path: '',
     loadComponent: () =>
       import('./pages/landing-page/landing-page').then((m) => m.LandingPage),
   },

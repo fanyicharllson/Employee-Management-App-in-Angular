@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.charllson.ems_backend.email.EmailHtml;
-import com.charllson.ems_backend.email.EmailSender;
 import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.helpers.EmailValidaor;
@@ -26,12 +25,12 @@ public class UserRegistrationService {
     @Value("${app.base-url:}")
     private String baseUrl;
 
+    private final EmailService emailService;
     private final EmailValidaor emailValidaor;
     private final UserService userService;
     private final ConfirmationTokenService confirmationTokenService;
     private final UserRepository userRepository;
     private final EmailHtml emailHtml;
-    private final EmailSender emailSender;
 
     // Constructor injection
     public UserRegistrationService(
@@ -40,13 +39,14 @@ public class UserRegistrationService {
             ConfirmationTokenService confirmationTokenService,
             UserRepository userRepository,
             EmailHtml emailHtml,
-            EmailService emailSender) {
+            EmailService emailService
+            ) {
         this.confirmationTokenService = confirmationTokenService;
         this.emailValidaor = emailValidaor;
         this.userService = userService;
         this.userRepository = userRepository;
         this.emailHtml = emailHtml;
-        this.emailSender = emailSender;
+        this.emailService = emailService;
     }
 
     @PostConstruct
@@ -122,8 +122,8 @@ public class UserRegistrationService {
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
         String emailLink = baseUrl + "/confirm-email/token=" + token; 
-
-        emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
+        String verificationHtml = emailHtml.buildVerificationEmail(user.getFullName(), emailLink);
+        emailService.sendEmail(user.getEmail(), "[TeamNest] Verify Your TeamNest Account", verificationHtml);
 
         return new ApiResponse(true, "Verification email resent successfully! Please check your inbox.", token);
     }

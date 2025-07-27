@@ -11,7 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.charllson.ems_backend.email.EmailHtml;
-import com.charllson.ems_backend.email.EmailSender;
 import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.model.token.ConfirmationToken;
@@ -27,9 +26,9 @@ public class UserService implements UserDetailsService {
     @Value("${app.base-url:}")
     private String baseUrl;
 
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final EmailSender emailSender;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailHtml emailHtml;
     private final static String USER_NOT_FOUND_MSG = "user with this email %s not found";
@@ -74,7 +73,8 @@ public class UserService implements UserDetailsService {
 
         String emailLink = baseUrl + "/confirm-email/token=" + token;
         // Send email
-        emailSender.send(user.getEmail(), emailHtml.buildEmailHtml(user.getFullName(), emailLink));
+        String verificationHtml = emailHtml.buildVerificationEmail(user.getFullName(), emailLink);
+        emailService.sendEmail(user.getEmail(), "[TeamNest] Verify Your TeamNest Account", verificationHtml);
 
         return new ApiResponse(true, "Registered successfully! Redirecting...",
                 token);

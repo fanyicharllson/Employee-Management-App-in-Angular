@@ -1,44 +1,37 @@
 package com.charllson.ems_backend.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import com.charllson.ems_backend.email.EmailSender;
-import com.charllson.ems_backend.exceptions.BadRequestException;
-
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
-
+import com.resend.*;
+import com.resend.core.exception.ResendException;
+import com.resend.services.emails.model.CreateEmailOptions;
+import com.resend.services.emails.model.CreateEmailResponse;
 
 @Service
-@AllArgsConstructor
-public class EmailService implements EmailSender {
+public class EmailService {
 
-    
-    private final JavaMailSender mailSender;
-    private final static Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
+    @Value("${resend.api-key}")
+    private String apiKey;
 
-    @Override
-    @Async
-    public void send(String to, String email) {
-       try {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-        helper.setText(email, true);
-        helper.setTo(to);
-        helper.setSubject("Confirm your email");
-        helper.setFrom("fanyicharllson@gmail.com");
-        mailSender.send(mimeMessage);
-        
-       } catch (MessagingException e) {
-         LOGGER.error("Failed to send email", e);
-         throw new BadRequestException("Failed to send email");
-       }
+    @Value("${resend.from-email}")
+    private String fromEmail;
+
+    public void sendEmail(String to, String subject, String htmlContent) {
+        Resend resend = new Resend(apiKey);
+
+        CreateEmailOptions params = CreateEmailOptions.builder()
+                .from("TeamNest | CharlseEmpire Tech <" + fromEmail + ">")
+                .to(to)
+                .subject(subject)
+                .html(htmlContent)
+                .build();
+
+        try {
+            CreateEmailResponse data = resend.emails().send(params);
+            System.out.println("Email Sent successfully of SUBJECT: " + subject + data.getId());
+        } catch (ResendException e) {
+            e.printStackTrace();
+        }
     }
-    
 }

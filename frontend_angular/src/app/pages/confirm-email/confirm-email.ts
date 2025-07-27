@@ -34,7 +34,6 @@ export class ConfirmEmail implements OnInit {
 
   ngOnInit(): void {
     this.token = this.route.snapshot.paramMap.get('token');
-    console.log('Param from token: ', this.token);
 
     if (this.token) {
       this.verifyEmail();
