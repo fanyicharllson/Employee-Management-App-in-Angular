@@ -1,62 +1,31 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import {
-  SidebarItem,
   Employee,
   Task,
   ChartData,
-  StatCard,
-  ProfileRoute,
 } from '../../../../types/types.dashboard';
 import { CommonModule } from '@angular/common';
-import {
-  ArrowLeftFromLine,
-  BarChart3,
-  Bell,
-  Calendar,
-  Clock,
-  DollarSign,
-  File,
-  HelpCircleIcon,
-  LucideAngularModule,
-  MenuSquare,
-  MessageSquare,
-  Plus,
-  Search,
-  Settings,
-  User,
-  UserIcon,
-  UserPlus,
-  X,
-} from 'lucide-angular';
 import { UserloginService } from '../../services/user.service/user.login.service';
-import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { OnBoardingService } from '../../services/onboarding.service/on-boarding.service';
+// import { OnBoardingService } from '../../services/onboarding.service/on-boarding.service';
 import { StatsCard } from '../../component/stats-card/stats-card';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, ReactiveFormsModule, LucideAngularModule, StatsCard],
+  imports: [CommonModule, ReactiveFormsModule, StatsCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  searchControl = new FormControl('');
-
-  // Signals for state management
-  activeTab = signal('Dashboard');
-  isMobileSidebarOpen = signal(false);
-  isProfileMenuOpen = signal(false);
 
   private userloginService = inject(UserloginService);
-  private onboardingService = inject(OnBoardingService);
+  // private onboardingService = inject(OnBoardingService);
   private toastr = inject(ToastrService);
-  private router = inject(Router);
+
   currentUser$ = this.userloginService.currentUser$;
 
-  onboardingData$ = this.onboardingService.getOnboarding();
-  loading$ = this.onboardingService.loading$;
+  // onboardingData$ = this.onboardingService.getOnboarding();
 
   username: string = '';
   role: string = '';
@@ -64,26 +33,6 @@ export class Dashboard implements OnInit {
   companySize: string = '';
   totalHires: number = 0;
   salaryRange: string = '';
-  totalEmplpoyees: number = 0;
-
-  // Dashboard icons
-  readonly Users = User;
-  readonly Dollarsign = DollarSign;
-  readonly Clock = Clock;
-  readonly FileText = File;
-  readonly Barchart = BarChart3;
-  readonly Calender = Calendar;
-  readonly UserPlus = UserPlus;
-  readonly MessageSquare = MessageSquare;
-  readonly Plus = Plus;
-  readonly Menu = MenuSquare;
-  readonly Bell = Bell;
-  readonly Search = Search;
-  readonly X = X;
-  readonly Setting = Settings;
-  readonly Help = HelpCircleIcon;
-  readonly ArrowLeft = ArrowLeftFromLine;
-  readonly Profile = UserIcon;
 
   ngOnInit() {
     // Subscribe to user changes
@@ -105,20 +54,10 @@ export class Dashboard implements OnInit {
   }
 
   //Call to refresh onboarding data
-  refreshData() {
-    this.onboardingData$ = this.onboardingService.getOnboarding(true);
-  }
+  // refreshData() {
+  //   this.onboardingData$ = this.onboardingService.getOnboarding(true);
+  // }
 
-  sidebarItems = signal<SidebarItem[]>([
-    { icon: this.Barchart, label: 'Dashboard', active: true },
-    { icon: this.Users, label: 'Employees', active: false },
-    { icon: this.UserPlus, label: 'Recruitment', active: false },
-    { icon: this.Calender, label: 'Schedule', active: false },
-    { icon: this.Dollarsign, label: 'Payroll', active: false },
-    { icon: this.Clock, label: 'Timesheet', active: false },
-    { icon: this.MessageSquare, label: 'Report', active: false },
-    { icon: this.FileText, label: 'Files', active: false },
-  ]);
 
   employees = signal<Employee[]>([
     {
@@ -194,51 +133,11 @@ export class Dashboard implements OnInit {
     { month: 'Jun', value: 35 },
     { month: 'Jul', value: 50 },
   ]);
-  
-
-  profileRoutes = signal<ProfileRoute[]>([
-    { text: 'Profile', route: 'profile', icon: this.Profile },
-    { text: 'Settings', route: 'setting', icon: this.Setting },
-    { text: 'Help', route: 'help', icon: this.Help },
-    { text: 'Sign Out', route: 'signout', btn: true, icon: this.ArrowLeft },
-  ]);
 
   // Computed values
   maxChartValue = computed(() => {
     return Math.max(...this.chartData().map((d) => d.value));
   });
-
-  setActiveTab(tab: string): void {
-    this.activeTab.set(tab);
-    this.sidebarItems.update((items) =>
-      items.map((item) => ({ ...item, active: item.label === tab })),
-    );
-  }
-
-  getSidebarItemClass(label: string): string {
-    const isActive = this.activeTab() === label;
-    return `w-full flex items-center px-6 py-3 text-left transition-colors ${
-      isActive
-        ? 'bg-purple-500 text-blue-600 border-r-2 border-pink-600'
-        : 'text-gray-600 hover:bg-gray-50'
-    }`;
-  }
-
-  toggleProfileMenu(): void {
-    this.isProfileMenuOpen.set(!this.isProfileMenuOpen());
-  }
-
-  closeProfileMenu(): void {
-    this.isProfileMenuOpen.set(false);
-  }
-
-  toggleMobileSideBar() {
-    this.isMobileSidebarOpen.update((value) => !value);
-  }
-
-  closeMobileSidebar() {
-    this.isMobileSidebarOpen.set(false);
-  }
 
   getChartHeight(value: number): number {
     return (value / this.maxChartValue()) * 200;
@@ -272,17 +171,4 @@ export class Dashboard implements OnInit {
     }
   }
 
-  handleSignOut(): void {
-    // Handle sign out logic
-    console.log('Signing out...');
-    this.userloginService.logout();
-    this.closeProfileMenu();
-  }
-
-  handleProfileClick(profileItem: ProfileRoute): void {
-    // Handle regular profile menu clicks
-    console.log('Navigating to:', profileItem.route);
-    // this.router.navigate([profileItem.route]);
-    this.closeProfileMenu();
-  }
 }

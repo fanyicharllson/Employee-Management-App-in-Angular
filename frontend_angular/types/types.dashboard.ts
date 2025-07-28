@@ -4,7 +4,7 @@ import { LucideIconData } from "lucide-angular";
 export interface SidebarItem {
   icon: LucideIconData;
   label: string;
-  active: boolean;
+  route: string;
 }
 
 export interface Employee {

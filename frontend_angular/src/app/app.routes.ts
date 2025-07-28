@@ -66,7 +66,7 @@ export const routes: Routes = [
       },
 
       {
-        path: 'employee',
+        path: 'hr/employees',
         loadComponent: () =>
           import('./pages/employee/employee').then((m) => m.Employee),
         canActivate: [AuthGuard, ConnectionGuard],

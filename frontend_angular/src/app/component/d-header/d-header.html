@@ -1,0 +1,141 @@
+<!-- Header -->
+<header class="bg-white shadow-sm border-b px-4 sm:px-6 lg:px-10 py-4 w-full">
+  <div
+    class="flex max-lg:flex-row-reverse flex-wrap items-center justify-between gap-4 min-w-0"
+  >
+<!--    Menu Bar-->
+    <div class="lg:hidden">
+      <button
+        class="p-2 bg-purple-500 rounded-lg text-white cursor-pointer"
+        (click)="toggleMobileSideBar()"
+      >
+        <lucide-icon [img]="Menu" class=""></lucide-icon>
+      </button>
+    </div>
+
+    <!--     Overlay (shown when mobile sidebar is open)-->
+    @if (isMobileSidebarOpen()) {
+      <div
+        (click)="closeMobileSidebar()"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-all duration-300"
+      ></div>
+    }
+
+
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">{{ getCurrentPageTitle() }}</h1>
+      <p class="text-gray-500 text-sm">Welcome back, {{ username }}</p>
+    </div>
+
+    <!-- Search bar and create btn -->
+    <div
+      class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full lg:w-auto min-w-0"
+    >
+      <div class="relative flex-1 lg:flex-initial min-w-0">
+        <i-lucide
+          [img]="Search"
+          class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400"
+        ></i-lucide>
+        <input
+          [formControl]="searchControl"
+          type="text"
+          placeholder="Search employees..."
+          class="pl-10 pr-2 py-2 w-full max-w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+
+      <div class="flex gap-2">
+        <button
+          class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
+        >
+          <lucide-icon [img]="Bell" class=""></lucide-icon>
+        </button>
+      </div>
+
+      <!-- User profile with Tailwind classes -->
+      <div class="relative flex-shrink-0">
+        <!-- Profile trigger -->
+        <div
+          class="flex justify-end items-center gap-3 cursor-pointer text-right"
+          (click)="toggleProfileMenu()"
+        >
+          <div>
+            <h3 class="text-right leading-none mb-1 font-semibold">
+              {{ username }}
+            </h3>
+            <p class="text-sm opacity-60 leading-nonef font-bold">
+              {{ role }}
+            </p>
+          </div>
+          <div class="relative w-12 h-12 rounded-full overflow-hidden">
+            <img
+              ngSrc="https://i.postimg.cc/BvNYhMHS/user-img.jpg"
+              alt="User profile image"
+              class="absolute top-0 left-0 w-full h-full object-cover"
+              fill/>
+          </div>
+        </div>
+
+        <!-- Dropdown Menu -->
+        <div
+          [class.invisible]="!isProfileMenuOpen()"
+          [class.opacity-0]="!isProfileMenuOpen()"
+          [class.opacity-100]="isProfileMenuOpen()"
+          [class.transform]="!isProfileMenuOpen()"
+          [class.translate-y-0]="isProfileMenuOpen()"
+          [class.translate-y-[-10px]]="!isProfileMenuOpen()"
+          [class.visible]="isProfileMenuOpen()"
+          class="absolute top-full right-4 mt-6 w-50 min-h-25 bg-white shadow-lg rounded-lg transition-all duration-300 z-50"
+        >
+          <!-- Arrow pointer -->
+          <div
+            class="absolute -top-2 right-3 w-4 h-4 bg-purple-500 transform rotate-45 shadow-lg"
+          ></div>
+
+          <ul class="relative bg-white rounded-lg z-10 py-2">
+            @for (profileItem of profileRoutes(); track profileItem.text) {
+              <li
+                [class]="
+                      profileItem.btn
+                        ? 'hover:bg-red-600 bg-red-500'
+                        : 'hover:bg-gray-100'
+                    "
+              >
+                <a
+                  [href]="profileItem.btn ? null : '#'"
+                  role="button"
+                  tabindex="0"
+                  [class]="
+                        profileItem.btn
+                          ? 'flex items-center px-5 py-3 text-white no-underline gap-2 cursor-pointer'
+                          : 'flex items-center px-5 py-3 text-black no-underline gap-2'
+                      "
+                  (click)="
+                        profileItem.btn
+                          ? handleSignOut()
+                          : handleProfileClick(profileItem)
+                      "
+                >
+                  <lucide-icon
+                    [img]="profileItem.icon"
+                    class="text-sm"
+                    [size]="18"
+                  ></lucide-icon>
+                  {{ profileItem.text }}
+                </a>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay for closing profile menu when clicking outside -->
+  @if (isProfileMenuOpen()) {
+    <div
+      (click)="closeProfileMenu()"
+      class="fixed inset-0 z-40"
+    ></div>
+  }
+</header>
