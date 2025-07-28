@@ -10,6 +10,7 @@ import { UserloginService } from '../../services/user.service/user.login.service
 import { ToastrService } from 'ngx-toastr';
 // import { OnBoardingService } from '../../services/onboarding.service/on-boarding.service';
 import { StatsCard } from '../../component/stats-card/stats-card';
+import { User } from '../../../../types/user.login.types';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,11 +43,7 @@ export class Dashboard implements OnInit {
         this.role = user.role;
         this.companyName = user.companyName;
         this.companySize = user.companySize;
-
-        this.toastr.success(
-          `Welcome back, ${user.name}!`,
-          'We are glad to have you on board!😘',
-        );
+        this.showWelcomeToast(user);
       } else {
         console.log('No user is currently logged in.', user);
       }
@@ -171,4 +168,18 @@ export class Dashboard implements OnInit {
     }
   }
 
+  private showWelcomeToast(user: User) {
+    const hasShownWelcome
+      = sessionStorage.getItem('welcomeShown');
+
+    if(!hasShownWelcome && user) {
+      this.toastr.success(
+        `Welcome back, ${user.name}!`,
+        'We are glad to have you on board!😘'
+      );
+      sessionStorage.setItem('welcomeShown', 'true');
+    } else if(!user) {
+      console.log('No user is currently logged in.');
+    }
+  }
 }

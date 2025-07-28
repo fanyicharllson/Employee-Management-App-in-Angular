@@ -11,9 +11,13 @@
         <div>
           <p class="text-white/80 text-sm">{{ stat.title }}</p>
           <p class="text-3xl font-bold">
-            <ng-container *ngIf="!(loading$ | async); else loadingDots">
-              {{ stat.value }}
-            </ng-container>
+            @if (!(loading$ | async)) {
+              <ng-container>
+                {{ stat.value }}
+              </ng-container>
+            } @else {
+              <ng-container *ngTemplateOutlet="loadingDots"></ng-container>
+            }
             <ng-template #loadingDots>
               <span class="dot-loader !text-sm">
                 <span></span><span></span><span></span>
@@ -26,9 +30,13 @@
         </div>
       </div>
       <p class="text-white/70 text-sm">
-        <ng-container *ngIf="!(loading$ | async); else loadingDotsChange">
-          {{ stat.change }}
-        </ng-container>
+        @if (!(loading$ | async)) {
+          <ng-container>
+            {{ stat.change }}
+          </ng-container>
+        } @else {
+          <ng-container *ngTemplateOutlet="loadingDotsChange"></ng-container>
+        }
         <ng-template #loadingDotsChange>
           <span class="dot-loader">
             <span></span><span></span><span></span>

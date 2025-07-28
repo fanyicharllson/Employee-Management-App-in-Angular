@@ -31,39 +31,13 @@ export class StatsCard implements OnInit {
   createdAt = '';
 
   ngOnInit(): void {
-    this.refreshData();
-
     this.onboardingData$.subscribe({
       next: (data) => {
-        // console.log('Onboarding Data:', data);
         this.totalEmployees = data.teamSize;
         this.newHires = data.totalHires;
         this.totalSalary = data.salaryRange;
         this.createdAt = data.createdAt;
-        this.statsCards.set([
-          {
-            title: 'Total Employees',
-            value: this.totalEmployees,
-            change: getRelativeTime(this.createdAt),
-            color: 'from-blue-500 to-blue-600',
-            icon: this.Users,
-          },
-          {
-            title: 'New Hires',
-            value: this.newHires,
-            change: getRelativeTime(this.createdAt),
-            color: 'from-purple-500 to-purple-600',
-            icon: this.UserPlus,
-          },
-          {
-            title: 'Total Salary',
-            value: this.totalSalary,
-            // change: '+15% from last month',
-            change: getRelativeTime(this.createdAt),
-            color: 'from-emerald-500 to-emerald-600',
-            icon: this.Dollarsign,
-          },
-        ]);
+        this.updateStatsCards();
       },
       error: (error) => {
         console.error('Error fetching onboarding data:', error);
@@ -71,9 +45,36 @@ export class StatsCard implements OnInit {
     });
   }
 
-  //Call to refresh onboarding data
+  //Call to refresh onboarding data(manual refresh)
   refreshData() {
     this.onboardingData$ = this.onboardingService.getOnboarding(true);
+  }
+
+  private updateStatsCards() {
+    this.statsCards.set([
+      {
+        title: 'Total Employees',
+        value: this.totalEmployees,
+        change: getRelativeTime(this.createdAt),
+        color: 'from-blue-500 to-blue-600',
+        icon: this.Users,
+      },
+      {
+        title: 'New Hires',
+        value: this.newHires,
+        change: getRelativeTime(this.createdAt),
+        color: 'from-purple-500 to-purple-600',
+        icon: this.UserPlus,
+      },
+      {
+        title: 'Total Salary',
+        value: this.totalSalary,
+        // change: '+15% from last month',
+        change: getRelativeTime(this.createdAt),
+        color: 'from-emerald-500 to-emerald-600',
+        icon: this.Dollarsign,
+      },
+    ]);
   }
 
   statsCards = signal<StatCard[]>([
