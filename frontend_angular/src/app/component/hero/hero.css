@@ -76,22 +76,13 @@
 
 .hero-pattern {
   background-image:
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(139, 92, 246, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(139, 92, 246, 0.1) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 40% 40%,
-      rgba(139, 92, 246, 0.05) 0%,
-      transparent 50%
-    );
+    linear-gradient(135deg, #7e5bef, #4f46e5, #3b82f6),
+    radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  background-blend-mode: overlay;
 }
+
 
 .morphing-shape {
   animation: morphing 8s ease-in-out infinite;

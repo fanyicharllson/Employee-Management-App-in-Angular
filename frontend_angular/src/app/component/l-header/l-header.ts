@@ -2,10 +2,11 @@ import { Component, inject, OnInit } from '@angular/core';
 import { NavItem } from '../../utils/navItem';
 import { ScrollToSection } from '../../services/scroll-to-section';
 import { Router, RouterModule } from '@angular/router';
+import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-l-header',
-  imports: [RouterModule],
+  imports: [RouterModule, NgOptimizedImage],
   templateUrl: './l-header.html',
   styleUrl: './l-header.css',
 })
@@ -17,7 +18,6 @@ export class LHeader implements OnInit {
 
   // nav items
   navItems = NavItem;
-
 
   ngOnInit() {
     if (typeof window !== 'undefined') {
@@ -45,7 +45,7 @@ export class LHeader implements OnInit {
   closeMobileMenu(): void {
     this.isMobileMenuOpen = false;
   }
-  
+
   // Navigate to register page when get started button is clicked
   navigateToRegister() {
     this.router.navigate(['/register']);
