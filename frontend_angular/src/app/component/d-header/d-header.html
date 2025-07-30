@@ -1,37 +1,20 @@
 <!-- Header -->
 <header class="bg-white shadow-sm border-b px-4 sm:px-6 py-4 w-full">
   <div
-    class="flex max-lg:flex-row-reverse flex-wrap items-center justify-between gap-4 min-w-0"
+    class="flex items-center justify-between"
   >
-    <!--    Menu Bar-->
-    <div class="lg:hidden">
-      <button
-        class="p-2 bg-purple-500 rounded-lg text-white cursor-pointer"
-        (click)="toggleMobileSideBar()"
-      >
-        <lucide-icon [img]="Menu" class=""></lucide-icon>
-      </button>
-    </div>
-
-    <!--     Overlay (shown when mobile sidebar is open)-->
-    @if (isMobileSidebarOpen()) {
-      <div
-        (click)="closeMobileSidebar()"
-        class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-all duration-300"
-      ></div>
-    }
-
-
+    <!--    Title - Left Item-->
     <div>
       <h1 class="text-2xl font-bold text-gray-900">{{ getCurrentPageTitle() }}</h1>
       <p class="text-gray-500 text-sm">Welcome back, {{ username }}👋</p>
     </div>
 
-    <!-- Search bar and create btn -->
+    <!-- Right Item-->
     <div
-      class="flex flex-col lg:flex-row items-stretch lg:items-center gap-3 w-full lg:w-auto min-w-0"
+      class="flex items-center gap-3"
     >
-      <div class="relative flex-1 lg:flex-initial min-w-0">
+      <!-- Search bar-->
+      <div class="relative flex-1 lg:flex-initial min-w-0 hidden lg:block">
         <i-lucide
           [img]="Search"
           class="absolute left-1 top-1/2 -translate-y-1/2 text-gray-400"
@@ -39,14 +22,16 @@
         <input
           [formControl]="searchControl"
           type="text"
-          placeholder="Search employees..."
+          placeholder="Search..."
           class="pl-10 pr-2 py-2 w-full max-w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
         />
       </div>
 
+      <!-- Notification-->
       <div class="flex gap-2">
         <button
           class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg cursor-pointer"
+          title="Notifications"
         >
           <lucide-icon [img]="Bell" class=""></lucide-icon>
         </button>
@@ -59,11 +44,15 @@
           class="flex justify-end items-center gap-3 cursor-pointer text-right"
           (click)="toggleProfileMenu()"
         >
-          <div>
-            <h3 class="text-right leading-none mb-1 font-semibold">
+          <div class="hidden lg:block">
+            <h3
+              class="text-right leading-none mb-1 font-semibold max-w-[120px] truncate"
+              title="{{ username }}"
+            >
               {{ username }}
             </h3>
-            <p class="text-sm opacity-60 leading-nonef font-bold">
+
+            <p class="text-sm opacity-60 leading-none font-bold">
               {{ role }}
             </p>
           </div>
@@ -102,7 +91,7 @@
                     "
               >
                 <a
-                  [href]="profileItem.btn ? null : '#'"
+                  [href]="profileItem.btn ? `/login` : '#'"
                   role="button"
                   tabindex="0"
                   [class]="
@@ -128,6 +117,25 @@
           </ul>
         </div>
       </div>
+
+      <!--    Menu Bar to toggle mobile sidebar-->
+      <div class="lg:hidden">
+        <button
+          class="p-2 bg-purple-500 rounded-lg text-white cursor-pointer"
+          (click)="toggleMobileSideBar()"
+        >
+          <lucide-icon [img]="Menu" class=""></lucide-icon>
+        </button>
+      </div>
+
+      <!--     Overlay (shown when mobile sidebar is open)-->
+      @if (isMobileSidebarOpen()) {
+        <div
+          (click)="closeMobileSidebar()"
+          class="fixed inset-0 bg-black/50 z-40 lg:hidden transition-all duration-300"
+        ></div>
+      }
+
     </div>
   </div>
 

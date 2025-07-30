@@ -153,7 +153,7 @@ export class UserloginService {
           this.router
             .navigateByUrl('/', { skipLocationChange: true })
             .then(() => {
-              this.router.navigate(['/login']);
+              this.router.navigate(['/login']).then(r => console.log(r));
             });
         },
       });

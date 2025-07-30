@@ -1,9 +1,17 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  ApexChart,
+  ApexAxisChartSeries,
+  ApexPlotOptions,
+  ApexDataLabels,
+  ApexLegend,
+  ApexXAxis,
+  ChartComponent
+} from 'ng-apexcharts';
 import { ReactiveFormsModule } from '@angular/forms';
 import {
   Employee,
   Task,
-  ChartData,
 } from '../../../../types/types.dashboard';
 import { CommonModule } from '@angular/common';
 import { UserloginService } from '../../services/user.service/user.login.service';
@@ -11,14 +19,32 @@ import { ToastrService } from 'ngx-toastr';
 // import { OnBoardingService } from '../../services/onboarding.service/on-boarding.service';
 import { StatsCard } from '../../component/stats-card/stats-card';
 import { User } from '../../../../types/user.login.types';
+import { RouterLink } from '@angular/router';
 
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  plotOptions: ApexPlotOptions;
+  dataLabels: ApexDataLabels;
+  legend: ApexLegend;
+  xaxis?: ApexXAxis;
+  colors?: string[];
+};
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, ReactiveFormsModule, StatsCard],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    StatsCard,
+    ChartComponent,
+    RouterLink,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
+  @ViewChild('chart') chart!: ChartComponent;
+  public chartOptions: Partial<ChartOptions>;
 
   private userloginService = inject(UserloginService);
   // private onboardingService = inject(OnBoardingService);
@@ -50,11 +76,123 @@ export class Dashboard implements OnInit {
     });
   }
 
+  // Constructor for chart
+  constructor() {
+    this.chartOptions = {
+      series: [
+        {
+          name: 'Actual',
+          data: [
+            {
+              x: '2011',
+              y: 12,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 14,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 2,
+                },
+              ],
+            },
+            {
+              x: '2012',
+              y: 44,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 54,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 5,
+                },
+              ],
+            },
+            {
+              x: '2013',
+              y: 54,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 52,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 10,
+                },
+              ],
+            },
+            {
+              x: '2014',
+              y: 66,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 61,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 10,
+                },
+              ],
+            },
+            {
+              x: '2015',
+              y: 81,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 66,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 10,
+                },
+              ],
+            },
+            {
+              x: '2016',
+              y: 67,
+              goals: [
+                {
+                  name: 'Expected',
+                  value: 70,
+                  strokeColor: '#775DD0',
+                  strokeWidth: 5,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      chart: {
+        height: 350,
+        type: 'bar',
+      },
+      plotOptions: {
+        bar: {
+          horizontal: true,
+        },
+      },
+      colors: ['#00E396'],
+      dataLabels: {
+        formatter: function (val: any, opt: any) {
+          const goals =
+            opt.w.config.series[opt.seriesIndex].data[opt.dataPointIndex].goals;
+          if (goals && goals.length) {
+            return `${val} / ${goals[0].value}`;
+          }
+          return val;
+        },
+      },
+      legend: {
+        show: true,
+        showForSingleSeries: true,
+        customLegendItems: ['Actual', 'Expected'],
+        markers: {
+          fillColors: ['#00E396', '#775DD0'],
+        },
+      },
+    };
+  }
+
   //Call to refresh onboarding data
   // refreshData() {
   //   this.onboardingData$ = this.onboardingService.getOnboarding(true);
   // }
-
 
   employees = signal<Employee[]>([
     {
@@ -121,25 +259,6 @@ export class Dashboard implements OnInit {
     { id: 4, title: 'Update website', priority: 'High', status: 'In Review' },
   ]);
 
-  chartData = signal<ChartData[]>([
-    { month: 'Jan', value: 20 },
-    { month: 'Feb', value: 35 },
-    { month: 'Mar', value: 40 },
-    { month: 'Apr', value: 30 },
-    { month: 'May', value: 45 },
-    { month: 'Jun', value: 35 },
-    { month: 'Jul', value: 50 },
-  ]);
-
-  // Computed values
-  maxChartValue = computed(() => {
-    return Math.max(...this.chartData().map((d) => d.value));
-  });
-
-  getChartHeight(value: number): number {
-    return (value / this.maxChartValue()) * 200;
-  }
-
   getPriorityClass(priority: string): string {
     const baseClass = 'px-2 py-1 rounded-full text-xs ';
     switch (priority) {
@@ -169,16 +288,15 @@ export class Dashboard implements OnInit {
   }
 
   private showWelcomeToast(user: User) {
-    const hasShownWelcome
-      = sessionStorage.getItem('welcomeShown');
+    const hasShownWelcome = sessionStorage.getItem('welcomeShown');
 
-    if(!hasShownWelcome && user) {
+    if (!hasShownWelcome && user) {
       this.toastr.success(
         `Welcome back, ${user.name}!`,
-        'We are glad to have you on board!😘'
+        'We are glad to have you on board!😘',
       );
       sessionStorage.setItem('welcomeShown', 'true');
-    } else if(!user) {
+    } else if (!user) {
       console.log('No user is currently logged in.');
     }
   }

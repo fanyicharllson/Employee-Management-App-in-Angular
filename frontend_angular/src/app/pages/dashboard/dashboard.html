@@ -11,33 +11,27 @@
 
   <!-- Chart + Employee List -->
   <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full min-w-0">
-    <!-- Chart -->
     <div class="bg-white rounded-2xl shadow-md p-6 w-full min-w-0">
       <div class="flex justify-between items-center mb-6">
         <h2 class="text-lg font-semibold text-gray-800">
-          Employee Statistics
+          Employee Performance
         </h2>
-        <select
-          class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-purple-500 focus:outline-none"
+        <button class="text-purple-600 hover:underline text-sm font-medium cursor-pointer"
+         [routerLink]="'/hr/employees/chart'"
         >
-          <option>Last 6 Months</option>
-          <option>Last Year</option>
-        </select>
+          View All
+        </button>
       </div>
-
-      <div class="h-64 flex items-end justify-between px-2 sm:px-4 w-full min-w-0 overflow-x-auto">
-        @for (item of chartData(); track item.month) {
-          <div class="flex flex-col items-center flex-shrink-0 min-w-[40px]">
-            <div
-              class="w-8 sm:w-10 bg-gradient-to-t from-purple-600 to-purple-400 rounded-t-xl mb-2 transition-all duration-300"
-              [style.height.px]="getChartHeight(item.value)"
-            ></div>
-            <span class="text-xs text-gray-500 whitespace-nowrap">{{ item.month }}</span>
-          </div>
-        }
-      </div>
+      <apx-chart
+        #chart
+        [series]="chartOptions.series!"
+        [chart]="chartOptions.chart!"
+        [plotOptions]="chartOptions.plotOptions!"
+        [dataLabels]="chartOptions.dataLabels!"
+        [legend]="chartOptions.legend!"
+        [colors]="chartOptions.colors!"
+      ></apx-chart>
     </div>
-
     <!-- Employee List -->
     <div class="bg-white rounded-2xl shadow-md p-6 w-full min-w-0">
       <div class="flex justify-between items-center mb-6">

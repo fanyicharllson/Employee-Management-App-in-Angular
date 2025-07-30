@@ -1,1 +1,45 @@
-<p>employee-chart works!</p>
+<div class="px-4 sm:px-6 text-center">
+  <h2 class="text-lg font-semibold italic text-purple-700 mb-6 text-center mt-3">
+    Workforce Insights Dashboard
+  </h2>
+  <div class="grid lg:grid-cols-2 grid-cols-1 gap-2 border-b border-purple-500">
+    <apx-chart
+      #chart
+      [series]="chartOptions.series!"
+      [chart]="chartOptions.chart!"
+      [xaxis]="chartOptions.xaxis!"
+      [title]="chartOptions.title!"
+    ></apx-chart>
+
+    <apx-chart
+      [series]="radialChartOptions.series!"
+      [chart]="radialChartOptions.chart!"
+      [labels]="radialChartOptions.labels!"
+      [plotOptions]="radialChartOptions.plotOptions!"
+      [title]="radialChartOptions.title!"
+    ></apx-chart>
+
+  </div>
+  <div class="grid lg:grid-cols-2 grid-cols-1 gap-4 pt-8">
+    <apx-chart
+      [series]="areaChartOptions.series!"
+      [chart]="areaChartOptions.chart!"
+      [dataLabels]="areaChartOptions.dataLabels!"
+      [stroke]="areaChartOptions.stroke!"
+      [xaxis]="areaChartOptions.xaxis!"
+      [tooltip]="areaChartOptions.tooltip!"
+    ></apx-chart>
+
+    <apx-chart
+      [series]="donutChartOptions.series!"
+      [chart]="donutChartOptions.chart!"
+      [labels]="donutChartOptions.labels!"
+      [plotOptions]="donutChartOptions.plotOptions!"
+      [dataLabels]="donutChartOptions.dataLabels!"
+      [fill]="donutChartOptions.fill!"
+      [legend]="donutChartOptions.legend!"
+      [title]="donutChartOptions.title!"
+      [responsive]="donutChartOptions.responsive!"
+    ></apx-chart>
+  </div>
+</div>

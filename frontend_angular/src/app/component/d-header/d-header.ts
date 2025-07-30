@@ -74,7 +74,7 @@ export class DHeader implements OnInit {
     { text: 'Profile', route: 'profile', icon: this.Profile },
     { text: 'Settings', route: 'setting', icon: this.Setting },
     { text: 'Help', route: 'help', icon: this.Help },
-    { text: 'Sign Out', route: 'signout', btn: true, icon: this.ArrowLeft },
+    { text: 'Sign Out', route: 'login', btn: true, icon: this.ArrowLeft },
   ]);
 
   toggleMobileSideBar() {
