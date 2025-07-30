@@ -1,1 +1,62 @@
-<p class="text-2xl mt-30">employee works!</p>
+<div class="min-h-screen flex flex-col bg-gray-50">
+  <!-- Header Navigation -->
+  <div class="bg-white border-b border-gray-200 flex-shrink-0">
+    <div class="px-4 sm:px-6">
+      <div class="flex flex-wrap items-center justify-between">
+        <div class="flex items-center space-x-6 py-4 overflow-x-auto">
+          <button
+            class="flex items-center space-x-2 px-4 py-2 text-purple-600 border-b-2 border-purple-600 font-medium whitespace-nowrap cursor-pointer hover:text-purple-600 transition-colors"
+            [class.text-purple-600]="router.url.includes('manage')"
+            [class.border-b-2]="router.url.includes('manage')"
+            [class.border-purple-600]="router.url.includes('manage')"
+            routerLink="manage"
+            routerLinkActive="active"
+          >
+            <lucide-icon [img]="UserPlus"></lucide-icon>
+            <span>Manage</span>
+          </button>
+
+          <button
+            class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-purple-600 font-medium transition-colors whitespace-nowrap cursor-pointer"
+            [class.text-purple-600]="router.url.includes('chart')"
+            [class.border-b-2]="router.url.includes('chart')"
+            [class.border-purple-600]="router.url.includes('chart')"
+            routerLink="chart"
+            routerLinkActive="active"
+          >
+            <lucide-icon [img]="Bars"></lucide-icon>
+            <span>Chart</span>
+          </button>
+
+          <button
+            class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-purple-600 font-medium transition-colors whitespace-nowrap cursor-pointer"
+            [class.text-purple-600]="router.url.includes('leave')"
+            [class.border-b-2]="router.url.includes('leave')"
+            [class.border-purple-600]="router.url.includes('leave')"
+            routerLink="leave"
+            routerLinkActive="active"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span>Leave</span>
+          </button>
+        </div>
+
+        <div>
+          <button
+            class="flex items-center gap-2 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer">
+            <lucide-icon [img]="Plus"></lucide-icon>
+            Add Employee
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="flex-1 flex flex-col h-full">
+    <router-outlet></router-outlet>
+  </div>
+</div>

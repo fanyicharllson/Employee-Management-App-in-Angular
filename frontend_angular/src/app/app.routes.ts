@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { OnboardingGuard } from './core/guards/onboarding.guard';
 import { ConnectionGuard } from './core/guards/connection.guard';
+import { EmployeeChart } from './pages/employee/employee-chart/employee-chart';
+import { EmployeeLeave } from './pages/employee/employee-leave/employee-leave';
+import { ManageEmployee } from './pages/employee/manage-employee/manage-employee';
 
 export const routes: Routes = [
   {
@@ -71,13 +74,22 @@ export const routes: Routes = [
           import('./pages/employee/employee').then((m) => m.Employee),
         canActivate: [AuthGuard, ConnectionGuard],
         data: { onboardingRequired: true },
+        children: [
+          { path: '', redirectTo: 'manage', pathMatch: 'full' },
+          { path: 'manage', component: ManageEmployee },
+          { path: 'chart', component: EmployeeChart },
+          { path: 'leave', component: EmployeeLeave },
+        ],
       },
     ],
   },
   // No internet route
   {
     path: 'no-internet',
-    loadComponent: () => import('./pages/no-internet/no-internet.component').then((m) => m.NoInternetComponent)
+    loadComponent: () =>
+      import('./pages/no-internet/no-internet.component').then(
+        (m) => m.NoInternetComponent,
+      ),
   },
 
   // Catch all route
@@ -87,5 +99,4 @@ export const routes: Routes = [
       import('./pages/not-found/not-found').then((m) => m.NotFound),
     canActivate: [ConnectionGuard],
   },
-
 ];

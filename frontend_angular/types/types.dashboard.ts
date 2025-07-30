@@ -15,6 +15,22 @@ export interface Employee {
   status: string;
   tag: string;
 }
+export interface Employees {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  designation: string;
+  avatar: string;
+}
+
+export  interface PaginationInfo {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
+}
+
 
 export interface Task {
   id: number;
