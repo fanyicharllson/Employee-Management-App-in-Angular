@@ -1,5 +1,71 @@
-<h2 mat-dialog-title>Hey {{ username }}, </h2>
-<mat-dialog-content>We have a sent an email to this employee!</mat-dialog-content>
-<mat-dialog-actions>
-  <button matButton mat-dialog-close>Ok</button>
-</mat-dialog-actions>
+<div class="bg-white rounded-xl shadow-2xl max-w-md mx-auto overflow-hidden max-h-[500px] overflow-y-auto">
+  <!-- Success Icon Header -->
+  <div class="bg-gradient-to-br from-green-50 to-emerald-50 px-8 py-8 text-center border-b border-green-100">
+    <div class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+      <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+      </svg>
+    </div>
+    <h2 mat-dialog-title class="text-2xl font-bold text-gray-800 mb-2">
+      Employee Added Successfully!
+    </h2>
+    <p class="text-green-700 font-medium">Welcome to the team, {{ username }}!</p>
+  </div>
+
+  <!-- Content Section -->
+  <mat-dialog-content class="px-8 py-6">
+    <div class="text-center space-y-4">
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start space-x-3">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+            </svg>
+          </div>
+          <div class="text-left">
+            <p class="text-sm font-semibold text-blue-800 mb-1">Invitation Email Sent</p>
+            <p class="text-sm text-blue-700">
+              The new employee has been sent an invitation email with instructions to join your organization and set up their account.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-lg p-4">
+        <h3 class="text-sm font-semibold text-gray-800 mb-2">What happens next?</h3>
+        <ul class="text-sm text-gray-600 space-y-2 text-left">
+          <li class="flex items-center space-x-2">
+            <div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+            <span>Employee receives welcome email with setup instructions</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+            <span>They'll create their account and verify their email</span>
+          </li>
+          <li class="flex items-center space-x-2">
+            <div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+            <span>You'll be notified once they complete onboarding</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Action Section -->
+  <mat-dialog-actions class="px-8 py-6 bg-gray-50 border-t border-gray-100">
+    <div class="w-full flex justify-center">
+      <button
+        mat-dialog-close
+        class="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 active:bg-purple-800 transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-sm cursor-pointer transform hover:scale-105"
+      >
+        <span class="flex items-center justify-center space-x-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+          </svg>
+          <span>Got it, thanks!</span>
+        </span>
+      </button>
+    </div>
+  </mat-dialog-actions>
+</div>

@@ -1,14 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { AddEmployeeInfo } from '../../../../types/user';
+import { AddEmployeeInfo, AddEmployeeResponse } from '../../../../types/user';
 import {
   BehaviorSubject,
   catchError,
-  Observable,
+  Observable, of,
   retry,
   shareReplay,
-  throwError,
+  throwError
 } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 
@@ -17,19 +17,19 @@ import { finalize } from 'rxjs/operators';
 })
 export class EmployeeService {
   private http = inject(HttpClient);
-  private employeeData$: Observable<AddEmployeeInfo> | undefined;
+  private employeeData$: Observable<AddEmployeeResponse> | undefined;
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
   private employeeApiUrl = `${environment.employeeApiUrl}`;
 
   // Add employee service
-  addEmployee(addEmployeeData: AddEmployeeInfo): Observable<AddEmployeeInfo> {
+  addEmployee(addEmployeeData: AddEmployeeInfo): Observable<AddEmployeeResponse> {
     console.log('Add Employee Data: ', addEmployeeData);
     if (!this.employeeData$) {
       this.loadingSubject.next(true);
 
       this.employeeData$ = this.http
-        .post<AddEmployeeInfo>(
+        .post<AddEmployeeResponse>(
           `${this.employeeApiUrl}/add-employee`,
           addEmployeeData,
           { withCredentials: true },
@@ -55,4 +55,8 @@ export class EmployeeService {
   clearEmployeeData(): void {
     this.employeeData$ = undefined;
   }
+  public getCachedEmployeeData(): Observable<AddEmployeeInfo | null> {
+    return this.employeeData$ ?? of(null);
+  }
+
 }

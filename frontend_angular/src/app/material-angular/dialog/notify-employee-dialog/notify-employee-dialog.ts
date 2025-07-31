@@ -5,7 +5,6 @@ import {
   MatDialogContent,
   MatDialogTitle,
 } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
 import { UserloginService } from '../../../services/user.service/user.login.service';
 
 @Component({
@@ -14,7 +13,6 @@ import { UserloginService } from '../../../services/user.service/user.login.serv
     MatDialogContent,
     MatDialogActions,
     MatDialogClose,
-    MatButton,
     MatDialogTitle,
   ],
   templateUrl: './notify-employee-dialog.html',

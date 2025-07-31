@@ -90,6 +90,7 @@ export class DialogContent implements OnInit {
       department: ['', [Validators.required, properCompanyNameValidator()]],
       fullName: ['', [Validators.required, notOnlyNumbersValidator()]],
       role: ['Employee', Validators.required],
+      occupation: ['', [Validators.required, properCompanyNameValidator()]],
     });
   }
 
@@ -101,7 +102,7 @@ export class DialogContent implements OnInit {
           console.log('Employee added successfully: ', res);
           this.toastr.success('Employee added successfully!', 'Success');
           this.dialogRef.close(res);
-          // open noify dialog
+          // open notify dialog
           this.openNotifyHRDialog();
         },
         error: (err) => {

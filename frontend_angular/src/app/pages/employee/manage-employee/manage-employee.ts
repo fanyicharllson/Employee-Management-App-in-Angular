@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { employees } from '../../../utils/employees';
 import { Employees, PaginationInfo } from '../../../../../types/types.dashboard';
 import { NgClass } from '@angular/common';
+import { EmployeeService } from '../../../services/employee/employee.service';
 
 @Component({
   selector: 'app-manage-employee',
@@ -20,6 +21,7 @@ export class ManageEmployee implements OnInit {
   showDesignationDropdown = false;
 
   protected readonly Number = Number;
+  private employeeService = inject(EmployeeService);
 
   ngOnInit() {
     // Create more employees for pagination demo
@@ -28,6 +30,8 @@ export class ManageEmployee implements OnInit {
       ...this.generateMoreEmployees()
     ];
     this.filterEmployees();
+
+    this.getCacheEmployee();
   }
 
 
@@ -60,6 +64,8 @@ export class ManageEmployee implements OnInit {
     totalPages: 0
   };
 
+
+
   generateMoreEmployees(): Employees[] {
     const additionalEmployees: Employees[] = [];
     const names = ['Sarah Johnson', 'Mike Chen', 'Lisa Rodriguez', 'James Wilson', 'Emily Davis', 'Alex Thompson', 'Maria Garcia', 'David Lee', 'Rachel Brown', 'Kevin Martinez', 'Amanda White', 'Chris Taylor', 'Jessica Clark', 'Ryan Anderson', 'Nicole Jackson'];
@@ -80,6 +86,16 @@ export class ManageEmployee implements OnInit {
     return additionalEmployees;
   }
 
+  private getCacheEmployee() {
+    this.employeeService.getCachedEmployeeData().subscribe((data) => {
+      if (data) {
+        console.log('Reusing cached employee data: ', data);
+        // Display on the UI or bind to component property
+      } else {
+        console.log('No cached employee data found', data);
+      }
+    });
+  }
   filterEmployees() {
     let filtered = [...employees];
 

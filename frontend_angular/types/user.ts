@@ -24,8 +24,22 @@ export interface AddEmployeeInfo {
   companyName: string;
   department: string;
   fullName: string;
-  role: 'Employee';
+  role: 'employee';
+  occupation: string;
+  profileImg?: string;
 }
+
+export interface AddEmployeeResponse {
+  id: string;
+  email: string;
+  companyName: string;
+  department: string;
+  fullName: string;
+  role: 'employee';
+  occupation: string;
+  profileImg: string;
+}
+
 // Dialog result: {
 //   "email": "fam@gmail.com",
 //     "companyName": "Emma Inc",
