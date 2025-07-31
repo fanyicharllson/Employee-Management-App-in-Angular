@@ -13,13 +13,15 @@ import {
   tap,
 } from 'rxjs';
 import { OnboardingResponse } from '../../../../types/types.dashboard';
+import { environment } from '../../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class OnBoardingService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/user';
+  private apiUrl = `${environment.onBoardingApiUrl}`;
 
   //cache variable
   private onboardingCache$?: Observable<OnboardingResponse>;
@@ -29,7 +31,7 @@ export class OnBoardingService {
 
   // Track cache timestamp for potential invalidation
   private cacheTimestamp?: number;
-  private readonly CACHE_DURATION = 5 * 60 * 1000; 
+  private readonly CACHE_DURATION = 5 * 60 * 1000;
 
   /**
    * Complete user onboarding
@@ -89,7 +91,7 @@ export class OnBoardingService {
           catchError((error: HttpErrorResponse) => {
             console.error('Onboarding fetch failed:', error);
             this.clearOnboardingCache();
-            throw error; 
+            throw error;
           }),
 
           finalize(() => {

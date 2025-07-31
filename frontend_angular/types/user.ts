@@ -18,3 +18,18 @@ export interface UserProfile {
   companySize: string;
   profile?: OnboardingData;
 }
+
+export interface AddEmployeeInfo {
+  email: string;
+  companyName: string;
+  department: string;
+  fullName: string;
+  role: 'Employee';
+}
+// Dialog result: {
+//   "email": "fam@gmail.com",
+//     "companyName": "Emma Inc",
+//     "department": "Marketing",
+//     "fullName": "Pull",
+//     "role": "Employee"
+// }

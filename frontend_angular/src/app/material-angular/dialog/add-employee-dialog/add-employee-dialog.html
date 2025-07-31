@@ -1,0 +1,146 @@
+<div class="bg-white rounded-lg shadow-lg max-w-2xl mx-auto">
+  <!-- Header Section -->
+  <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-8 py-6 rounded-t-lg">
+    <h2 class="text-2xl font-bold text-white mb-2">Add New Employee</h2>
+    <p class="text-purple-100 text-sm">Fill in the employee details to add them to your organization</p>
+  </div>
+
+  <!-- Form Content -->
+  <mat-dialog-content class="mat-typography px-8 py-6">
+    <form [formGroup]="addEmployeeForm" (ngSubmit)="submit()" class="space-y-6">
+
+      <!-- Personal Information Section -->
+      <div class="border-b border-gray-200 pb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"></path>
+          </svg>
+          Personal Information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+            <input
+              type="text"
+              formControlName="fullName"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+              placeholder="Enter employee's full name"
+            />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+              placeholder="employee@company.com"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Information Section -->
+      <div class="border-b border-gray-200 pb-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a2 2 0 104 0v6H6v-6zm6 0a2 2 0 104 0v6h-4v-6z"
+                  clip-rule="evenodd"></path>
+          </svg>
+          Work Information
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+            <input
+              type="text"
+              formControlName="department"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+              placeholder="e.g., Engineering, Marketing, Sales"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+            <input
+              type="text"
+              formControlName="companyName"
+              readonly
+              [value]="companyName"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 cursor-not-allowed"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Role Assignment Section -->
+      <div class="pb-2">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+          <svg class="w-5 h-5 mr-2 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+                  d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                  clip-rule="evenodd"></path>
+          </svg>
+          Role Assignment
+        </h3>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Role</label>
+          <input
+            type="text"
+            formControlName="role"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+            readonly
+            value="Employee"
+          />
+          <div class="mt-2 flex items-center text-sm text-gray-500">
+            <svg class="w-4 h-4 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"></path>
+            </svg>
+            New employees are automatically assigned the "Employee" role by default
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <mat-dialog-actions align="end" class="flex justify-end gap-3 pt-6 border-t border-gray-200">
+        <button
+          type="button"
+          (click)="cancel()"
+          [disabled]="isSubmitting$ | async"
+          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="addEmployeeForm.invalid || (isSubmitting$ | async)"
+          class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          @if (isSubmitting$ | async) {
+            <span class="flex items-center justify-center">
+      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+        <path fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              class="opacity-75"></path>
+      </svg>
+      Adding employee...
+    </span>
+          } @else {
+            <span class="flex items-center justify-center">
+      <lucide-icon [img]="Plus"></lucide-icon>
+      Add Employee
+    </span>
+          }
+        </button>
+      </mat-dialog-actions>
+    </form>
+  </mat-dialog-content>
+</div>

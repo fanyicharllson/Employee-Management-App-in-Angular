@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
+
 import { routes } from './app.routes';
 import {
   HTTP_INTERCEPTORS,
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
       withFetch(),
-      withInterceptorsFromDi(), 
+      withInterceptorsFromDi(),
     ),
     AuthInterceptor,
     {

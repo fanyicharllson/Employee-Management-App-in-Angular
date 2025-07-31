@@ -5,7 +5,7 @@
       <div class="flex flex-wrap items-center justify-between">
         <div class="flex items-center space-x-6 py-4 overflow-x-auto">
           <button
-            class="flex items-center space-x-2 px-4 py-2 text-purple-600 border-b-2 border-purple-600 font-medium whitespace-nowrap cursor-pointer hover:text-purple-600 transition-colors"
+            class="flex items-center space-x-2 px-4 py-2 text-gray-500 hover:text-purple-600 font-medium transition-colors whitespace-nowrap cursor-pointer"
             [class.text-purple-600]="router.url.includes('manage')"
             [class.border-b-2]="router.url.includes('manage')"
             [class.border-purple-600]="router.url.includes('manage')"
@@ -46,7 +46,9 @@
 
         <div>
           <button
-            class="flex items-center gap-2 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer">
+            class="flex items-center gap-2 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors cursor-pointer"
+            (click)="openDialog()"
+          >
             <lucide-icon [img]="Plus"></lucide-icon>
             Add Employee
           </button>
