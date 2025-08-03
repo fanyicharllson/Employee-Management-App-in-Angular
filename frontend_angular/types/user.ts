@@ -26,24 +26,17 @@ export interface AddEmployeeInfo {
   fullName: string;
   role: 'employee';
   occupation: string;
-  profileImg?: string;
 }
 
 export interface AddEmployeeResponse {
-  id: string;
+  id: string; // employee id
+  HrId: string; // HR Id which will be return to fetch the employees that belong to the HR
   email: string;
   companyName: string;
   department: string;
   fullName: string;
   role: 'employee';
   occupation: string;
-  profileImg: string;
 }
 
-// Dialog result: {
-//   "email": "fam@gmail.com",
-//     "companyName": "Emma Inc",
-//     "department": "Marketing",
-//     "fullName": "Pull",
-//     "role": "Employee"
-// }
+export type Employee = AddEmployeeResponse;

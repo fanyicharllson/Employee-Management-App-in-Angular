@@ -97,13 +97,28 @@ export class DialogContent implements OnInit {
   submit() {
     if (this.addEmployeeForm.valid) {
       const employeeData = this.addEmployeeForm.value;
+
+      //Check if we already have cache for this employee
+      if (this.employeeService.hasCacheForEmployee(employeeData)) {
+        console.log('Employee already exists in cache');
+        this.getCachedEmployee();
+        return;
+      }
+
       this.employeeService.addEmployee(employeeData).subscribe({
         next: (res) => {
-          console.log('Employee added successfully: ', res);
-          this.toastr.success('Employee added successfully!', 'Success');
-          this.dialogRef.close(res);
-          // open notify dialog
-          this.openNotifyHRDialog();
+          const status = res.status;
+          const responseBody = res.body;
+
+          if (status === 201) {
+            this.toastr.success('Employee added successfully!', 'Success');
+            this.dialogRef.close(responseBody);
+            this.openNotifyHRDialog()
+
+          } else if (status === 409) {
+            console.warn('⚠️ Conflict: ', responseBody);
+            this.toastr.error("Employee already Added!", "Conflict")
+          }
         },
         error: (err) => {
           console.error('Failed to add employee', err);
@@ -119,5 +134,17 @@ export class DialogContent implements OnInit {
 
   private openNotifyHRDialog() {
     this.dialog.open(NotifyEmployeeDialog);
+  }
+
+  private getCachedEmployee() {
+    this.employeeService.getCachedEmployeeData().subscribe((data) => {
+      if (data?.body) {
+        console.log('Using cached employee data:', data.body);
+        // Use cached data
+      } else {
+        console.log('No cached employee data found');
+        // Handle no cache scenario
+      }
+    });
   }
 }

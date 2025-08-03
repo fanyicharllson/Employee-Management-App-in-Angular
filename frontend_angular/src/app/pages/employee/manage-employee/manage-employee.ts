@@ -1,13 +1,24 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { employees } from '../../../utils/employees';
-import { Employees, PaginationInfo } from '../../../../../types/types.dashboard';
-import { NgClass } from '@angular/common';
+import { NgClass, CommonModule } from '@angular/common';
 import { EmployeeService } from '../../../services/employee/employee.service';
+import { AddEmployeeResponse } from '../../../../../types/user';
+import { ToastrService } from 'ngx-toastr';
+import { HttpErrorResponse } from '@angular/common/http';
+
+// Employee type is the same as AddEmployeeResponse
+type Employee = AddEmployeeResponse;
+
+interface PaginationInfo {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
+}
 
 @Component({
   selector: 'app-manage-employee',
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, CommonModule],
   templateUrl: './manage-employee.html',
   styleUrl: './manage-employee.css'
 })
@@ -15,48 +26,37 @@ export class ManageEmployee implements OnInit {
   searchTerm = '';
   currentSort = 'New Employees';
   selectedDepartment = '';
-  selectedDesignation = '';
+  selectedOccupation = '';
   showSortDropdown = false;
   showDepartmentDropdown = false;
-  showDesignationDropdown = false;
+  showOccupationDropdown = false;
 
   protected readonly Number = Number;
   private employeeService = inject(EmployeeService);
+  private toastr = inject(ToastrService);
 
-  ngOnInit() {
-    // Create more employees for pagination demo
-    this.employeesList = [
-      ...employees,
-      ...this.generateMoreEmployees()
-    ];
-    this.filterEmployees();
+  // Real employee data from backend
+  allEmployees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
+  paginatedEmployees: Employee[] = [];
 
-    this.getCacheEmployee();
-  }
+  // Dynamic filter options (populated from actual data)
+  departments: string[] = ['All'];
+  occupations: string[] = ['All'];
 
-
-  filteredEmployees: Employees[] = [];
-  paginatedEmployees: Employees[] = [];
-  employeesList: Employees[] = [];
-
+  // Loading states
+  isLoading = false;
+  hasError = false;
+  errorMessage = '';
 
   sortOptions = [
     'New Employees',
     'Name A-Z',
     'Name Z-A',
     'Department',
-    'Designation'
+    'Occupation'
   ];
-  departments = ['All', 'Art & Design', 'Development', 'UI/UX Design'];
-  designations = [
-    'All',
-    'Product Designer',
-    'UI Designer',
-    'UX Designer',
-    'Developer',
-    'Motion Designer',
-    'Product Manager'
-  ];
+
   pagination: PaginationInfo = {
     currentPage: 1,
     itemsPerPage: 10,
@@ -64,48 +64,146 @@ export class ManageEmployee implements OnInit {
     totalPages: 0
   };
 
-
-
-  generateMoreEmployees(): Employees[] {
-    const additionalEmployees: Employees[] = [];
-    const names = ['Sarah Johnson', 'Mike Chen', 'Lisa Rodriguez', 'James Wilson', 'Emily Davis', 'Alex Thompson', 'Maria Garcia', 'David Lee', 'Rachel Brown', 'Kevin Martinez', 'Amanda White', 'Chris Taylor', 'Jessica Clark', 'Ryan Anderson', 'Nicole Jackson'];
-    const departments = ['Art & Design', 'Development', 'UI/UX Design'];
-    const designations = ['Product Designer', 'UI Designer', 'UX Designer', 'Developer', 'Motion Designer', 'Product Manager'];
-
-    for (let i = 0; i < 15; i++) {
-      additionalEmployees.push({
-        id: `${Date.now()}-${i}`,
-        name: names[i],
-        email: `${names[i].toLowerCase().replace(' ', '.')}@company.com`,
-        department: departments[i % departments.length],
-        designation: designations[i % designations.length],
-        avatar: `https://images.unsplash.com/photo-${1500000000000 + i * 1000000}?w=150&h=150&fit=crop&crop=face`
-      });
-    }
-
-    return additionalEmployees;
+  ngOnInit() {
+    this.loadEmployees();
   }
 
-  private getCacheEmployee() {
-    this.employeeService.getCachedEmployeeData().subscribe((data) => {
-      if (data) {
-        console.log('Reusing cached employee data: ', data);
-        // Display on the UI or bind to component property
-      } else {
-        console.log('No cached employee data found', data);
+  /**
+   * Load employees from backend
+   */
+  loadEmployees(forceRefresh: boolean = false) {
+    this.isLoading = true;
+    this.hasError = false;
+
+    this.employeeService.getAllEmployees(forceRefresh).subscribe({
+      next: (response) => {
+        if (response.body) {
+          this.allEmployees = response.body;
+          this.populateFilterOptions();
+          this.filterEmployees();
+
+          const message = forceRefresh ? 'Employees list refreshed successfully!' : 'Employees loaded successfully!';
+          this.toastr.success(message, 'Success');
+
+          console.log(`Loaded ${this.allEmployees.length} employees from backend`);
+        } else {
+          this.handleEmptyResponse();
+        }
+        this.isLoading = false;
+      },
+      error: (error: HttpErrorResponse) => {
+        this.handleError(error);
+        this.isLoading = false;
       }
     });
   }
+
+  /**
+   * Handle different HTTP error responses
+   */
+  private handleError(error: HttpErrorResponse) {
+    this.hasError = true;
+    console.error('Error loading employees:', error);
+
+    switch (error.status) {
+      case 401:
+        this.errorMessage = 'You are not authorized to view employees. Please login again.';
+        this.toastr.error(this.errorMessage, 'Unauthorized');
+        break;
+
+      case 404:
+        this.errorMessage = 'No employees found for your account.';
+        this.toastr.info(this.errorMessage, 'No Employees');
+        this.allEmployees = [];
+        this.filteredEmployees = [];
+        this.paginatedEmployees = [];
+        this.updatePagination();
+        break;
+
+      case 400:
+        const badRequestMessage = error.error?.message || 'Bad request. Please check your data.';
+        this.errorMessage = badRequestMessage;
+        this.toastr.error(badRequestMessage, 'Bad Request');
+        break;
+
+      case 500:
+        this.errorMessage = 'Server error occurred. Please try again later.';
+        this.toastr.error(this.errorMessage, 'Server Error');
+        break;
+
+      case 0:
+        this.errorMessage = 'Network error. Please check your internet connection.';
+        this.toastr.error(this.errorMessage, 'Network Error');
+        break;
+
+      default:
+        const defaultMessage = error.error?.message || 'An unexpected error occurred. Please try again.';
+        this.errorMessage = defaultMessage;
+        this.toastr.error(defaultMessage, 'Error');
+        break;
+    }
+  }
+
+  /**
+   * Handle empty response
+   */
+  private handleEmptyResponse() {
+    this.allEmployees = [];
+    this.filteredEmployees = [];
+    this.paginatedEmployees = [];
+    this.updatePagination();
+    this.toastr.info('No employees found.', 'Empty Response');
+  }
+
+  /**
+   * Populate filter options from actual employee data
+   */
+  private populateFilterOptions() {
+    // Get unique departments
+    const uniqueDepartments = [...new Set(this.allEmployees.map(emp => emp.department))];
+    this.departments = ['All', ...uniqueDepartments.sort()];
+
+    // Get unique occupations
+    const uniqueOccupations = [...new Set(this.allEmployees.map(emp => emp.occupation))];
+    this.occupations = ['All', ...uniqueOccupations.sort()];
+  }
+
+  /**
+   * Refresh employees from server
+   */
+  refreshEmployees() {
+    this.toastr.info('Refreshing employees list...', 'Loading');
+    this.loadEmployees(true);
+  }
+
+  /**
+   * Search employees using cached data
+   */
+  searchEmployees() {
+    if (this.searchTerm.trim()) {
+      const results = this.employeeService.searchCachedEmployees(this.searchTerm);
+      this.filteredEmployees = results;
+      this.toastr.info(`Found ${results.length} employees matching "${this.searchTerm}"`, 'Search Results');
+    } else {
+      this.filteredEmployees = [...this.allEmployees];
+    }
+    this.pagination.currentPage = 1;
+    this.updatePagination();
+  }
+
+  /**
+   * Filter employees based on search, department, and occupation
+   */
   filterEmployees() {
-    let filtered = [...employees];
+    let filtered = [...this.allEmployees];
 
     // Apply search filter
     if (this.searchTerm) {
       filtered = filtered.filter(emp =>
-        emp.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        emp.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         emp.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         emp.department.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.designation.toLowerCase().includes(this.searchTerm.toLowerCase())
+        emp.occupation.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
 
@@ -114,24 +212,28 @@ export class ManageEmployee implements OnInit {
       filtered = filtered.filter(emp => emp.department === this.selectedDepartment);
     }
 
-    // Apply designation filter
-    if (this.selectedDesignation && this.selectedDesignation !== 'All') {
-      filtered = filtered.filter(emp => emp.designation === this.selectedDesignation);
+    // Apply occupation filter
+    if (this.selectedOccupation && this.selectedOccupation !== 'All') {
+      filtered = filtered.filter(emp => emp.occupation === this.selectedOccupation);
     }
 
     // Apply sorting
     switch (this.currentSort) {
       case 'Name A-Z':
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
+        filtered.sort((a, b) => a.fullName.localeCompare(b.fullName));
         break;
       case 'Name Z-A':
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
+        filtered.sort((a, b) => b.fullName.localeCompare(a.fullName));
         break;
       case 'Department':
         filtered.sort((a, b) => a.department.localeCompare(b.department));
         break;
-      case 'Designation':
-        filtered.sort((a, b) => a.designation.localeCompare(b.designation));
+      case 'Occupation':
+        filtered.sort((a, b) => a.occupation.localeCompare(b.occupation));
+        break;
+      case 'New Employees':
+      default:
+        // Keep original order (newest first, assuming backend returns in creation order)
         break;
     }
 
@@ -157,29 +259,32 @@ export class ManageEmployee implements OnInit {
     this.paginatedEmployees = this.filteredEmployees.slice(startIndex, endIndex);
   }
 
+  // Dropdown toggle methods
   toggleSortDropdown() {
     this.showSortDropdown = !this.showSortDropdown;
     this.showDepartmentDropdown = false;
-    this.showDesignationDropdown = false;
+    this.showOccupationDropdown = false;
   }
 
   toggleDepartmentDropdown() {
     this.showDepartmentDropdown = !this.showDepartmentDropdown;
     this.showSortDropdown = false;
-    this.showDesignationDropdown = false;
+    this.showOccupationDropdown = false;
   }
 
-  toggleDesignationDropdown() {
-    this.showDesignationDropdown = !this.showDesignationDropdown;
+  toggleOccupationDropdown() {
+    this.showOccupationDropdown = !this.showOccupationDropdown;
     this.showSortDropdown = false;
     this.showDepartmentDropdown = false;
   }
 
+  // Selection methods
   selectSort(option: string) {
     this.currentSort = option;
     this.showSortDropdown = false;
     this.pagination.currentPage = 1;
     this.filterEmployees();
+    this.toastr.info(`Sorted by: ${option}`, 'Filter Applied');
   }
 
   selectDepartment(dept: string) {
@@ -187,20 +292,23 @@ export class ManageEmployee implements OnInit {
     this.showDepartmentDropdown = false;
     this.pagination.currentPage = 1;
     this.filterEmployees();
+    this.toastr.info(`Filtered by department: ${dept}`, 'Filter Applied');
   }
 
-  selectDesignation(designation: string) {
-    this.selectedDesignation = designation;
-    this.showDesignationDropdown = false;
+  selectOccupation(occupation: string) {
+    this.selectedOccupation = occupation;
+    this.showOccupationDropdown = false;
     this.pagination.currentPage = 1;
     this.filterEmployees();
+    this.toastr.info(`Filtered by occupation: ${occupation}`, 'Filter Applied');
   }
 
   clearSort(event: Event) {
     event.stopPropagation();
-    this.currentSort = 'All';
+    this.currentSort = 'New Employees';
     this.pagination.currentPage = 1;
     this.filterEmployees();
+    this.toastr.info('Sort cleared', 'Filter Cleared');
   }
 
   onSearchChange() {
@@ -208,6 +316,7 @@ export class ManageEmployee implements OnInit {
     this.filterEmployees();
   }
 
+  // Pagination methods
   goToPage(page: number) {
     if (page >= 1 && page <= this.pagination.totalPages) {
       this.pagination.currentPage = page;
@@ -236,28 +345,23 @@ export class ManageEmployee implements OnInit {
     const pages: (number | string)[] = [];
 
     if (totalPages <= 7) {
-      // Show all pages if total pages is 7 or less
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Always show first page
       pages.push(1);
 
       if (currentPage <= 4) {
-        // Show pages 2, 3, 4, 5 and ellipsis
         for (let i = 2; i <= 5; i++) {
           pages.push(i);
         }
         pages.push('...');
       } else if (currentPage >= totalPages - 3) {
-        // Show ellipsis and last 4 pages
         pages.push('...');
         for (let i = totalPages - 4; i <= totalPages - 1; i++) {
           pages.push(i);
         }
       } else {
-        // Show ellipsis, current page area, ellipsis
         pages.push('...');
         for (let i = currentPage - 1; i <= currentPage + 1; i++) {
           pages.push(i);
@@ -265,7 +369,6 @@ export class ManageEmployee implements OnInit {
         pages.push('...');
       }
 
-      // Always show last page (if not already shown)
       if (totalPages > 1) {
         pages.push(totalPages);
       }
@@ -285,15 +388,58 @@ export class ManageEmployee implements OnInit {
   }
 
   getDepartmentClass(department: string): string {
-    switch (department) {
-      case 'Art & Design':
-        return 'bg-purple-100 text-purple-800';
-      case 'Development':
-        return 'bg-green-100 text-green-800';
-      case 'UI/UX Design':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+    // Generate consistent colors based on department name
+    const colors = [
+      'bg-purple-100 text-purple-800',
+      'bg-green-100 text-green-800',
+      'bg-orange-100 text-orange-800',
+      'bg-blue-100 text-blue-800',
+      'bg-red-100 text-red-800',
+      'bg-yellow-100 text-yellow-800',
+      'bg-indigo-100 text-indigo-800',
+      'bg-pink-100 text-pink-800'
+    ];
+
+    const index = department.length % colors.length;
+    return colors[index];
+  }
+
+  /**
+   * Get cached employees count
+   */
+  getCachedCount(): number {
+    return this.employeeService.getCachedEmployeesCount();
+  }
+
+  /**
+   * Clear all filters
+   */
+  clearAllFilters() {
+    this.searchTerm = '';
+    this.currentSort = 'New Employees';
+    this.selectedDepartment = '';
+    this.selectedOccupation = '';
+    this.pagination.currentPage = 1;
+    this.filterEmployees();
+    this.toastr.info('All filters cleared', 'Filters Reset');
+  }
+
+  /**
+   * Delete employee (you'll need to implement this in your service)
+   */
+  deleteEmployee(employee: Employee) {
+    if (confirm(`Are you sure you want to delete ${employee.fullName}?`)) {
+      // TODO: Implement delete in service
+      // this.employeeService.deleteEmployee(employee.id).subscribe({
+      //   next: () => {
+      //     this.employeeService.removeEmployeeFromCache(employee.id);
+      //     this.loadEmployees();
+      //     this.toastr.success(`${employee.fullName} deleted successfully`, 'Employee Deleted');
+      //   },
+      //   error: (error) => this.handleError(error)
+      // });
+
+      this.toastr.info('Delete functionality not implemented yet', 'Coming Soon');
     }
   }
 }

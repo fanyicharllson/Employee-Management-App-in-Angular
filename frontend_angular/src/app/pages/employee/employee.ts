@@ -25,8 +25,7 @@ export class Employee {
   openDialog() {
     const dialogRef = this.dialog.open(DialogContent);
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog result: ' + JSON.stringify(result, null, 2));
-
+      console.log('Dialog result loaded ');
     });
   }
 }
