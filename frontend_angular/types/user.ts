@@ -39,4 +39,9 @@ export interface AddEmployeeResponse {
   occupation: string;
 }
 
+export interface CompanyData {
+  companyName: string | null | undefined;
+  email: string | null;
+}
+
 export type Employee = AddEmployeeResponse;

@@ -15,17 +15,33 @@ export class AuthInterceptor implements HttpInterceptor {
   private router = inject(Router);
   private userService = inject(UserloginService);
 
+  // routes that should not trigger authentication redirects
+  private readonly EXEMPT_ROUTES = [
+    '/login',
+    '/register',
+    '/employee-login',
+    '/confirm-invite-email',
+    '/confirm-email',
+    '/me'
+  ];
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    return next.handle(req).pipe(
+    // Clone request with credentials enabled
+    const cloned = req.clone({
+      withCredentials: true
+    });
+
+    return next.handle(cloned).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
-          const isLoginRequest = req.url.includes('/login');
-          const isSessionCheck = req.url.includes('/me');
+          const isExemptRoute = this.EXEMPT_ROUTES.some(route =>
+            req.url.includes(route) || window.location.pathname.includes(route)
+          );
 
-          if (!isLoginRequest && !isSessionCheck) {
+          if (!isExemptRoute) {
             this.userService.setCurrentUser(null);
             this.router.navigate(['/login'], {
               queryParams: { sessionExpired: 'true' },

@@ -37,14 +37,24 @@ export const routes: Routes = [
       ),
     canActivate: [ConnectionGuard],
   },
-  // Verify email route
+  // Verify email route ==during create account
   {
     path: 'confirm-email/:token',
     loadComponent: () =>
       import('./pages/confirm-email/confirm-email').then((m) => m.ConfirmEmail),
     canActivate: [ConnectionGuard],
   },
+  //invite email for employee
+  {
+    path: 'confirm-invite-email/:token',
+    loadComponent: () => import('./pages/employee-confirm-token/employee-confirm-token').then((m) => m.EmployeeConfirmToken)
+  },
 
+  //employee sign up route
+  {
+    path: 'employee-login',
+    loadComponent: () => import('./pages/employee/employee-signup/employee-signup').then((m) => m.EmployeeSignupComponent)
+  },
   // Onboarding route - only accessible if user needs to complete onboarding
   {
     path: 'onboarding',

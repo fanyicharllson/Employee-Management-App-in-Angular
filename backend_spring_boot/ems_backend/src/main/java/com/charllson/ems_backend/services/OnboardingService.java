@@ -35,7 +35,7 @@ public class OnboardingService {
 
         Optional<OnBoarding> existing = onboardingRepository.findByUserId(userId);
 
-        OnBoarding oBoarding = existing.orElseGet(() -> new OnBoarding());
+        OnBoarding oBoarding = existing.orElseGet(OnBoarding::new);
         oBoarding.setUser(user);
         oBoarding.setJobTitle(request.jobTitle());
         oBoarding.setDepartment(request.department());

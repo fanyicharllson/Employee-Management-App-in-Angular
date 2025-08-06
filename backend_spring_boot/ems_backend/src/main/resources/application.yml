@@ -4,9 +4,8 @@ server:
     include-binding-errors: always
 
 spring:
-  config:
-    import:
-      - optional:.env
+  thymeleaf:
+    check-template-location: false
   datasource:
     url: ${DB_URL}
     username: postgres
@@ -49,3 +48,6 @@ app:
 resend:
   api-key: ${RESEND_API_KEY}
   from-email: ${RESEND_FROM_EMAIL}
+logging:
+  level:
+    org.springframework.boot.context.config: DEBUG
