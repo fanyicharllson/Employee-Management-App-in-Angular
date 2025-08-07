@@ -995,4 +995,275 @@ public class EmailHtml {
                 hrFullName, // support contact
                 java.time.Year.now().getValue()); // footer year
     }
+
+    public String buildEmployeeWelcomeEmail(String companyName, String employeeName, String link) {
+        return String.format(
+                """
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Welcome to %s!</title>
+                            <style>
+                                body {
+                                    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+                                    background: linear-gradient(135deg, #f8fafc 0%%, #e2e8f0 100%%);
+                                    padding: 0;
+                                    margin: 0;
+                                    line-height: 1.6;
+                                }
+                                .email-container {
+                                    max-width: 600px;
+                                    margin: 40px auto;
+                                    background: #ffffff;
+                                    border-radius: 16px;
+                                    box-shadow: 0 20px 50px rgba(139, 92, 246, 0.1);
+                                    overflow: hidden;
+                                }
+                                .header {
+                                    background: linear-gradient(135deg, #8b5cf6 0%%, #7c3aed 100%%);
+                                    padding: 40px 30px;
+                                    text-align: center;
+                                    color: white;
+                                }
+                                .logo {
+                                    font-size: 28px;
+                                    font-weight: 800;
+                                    margin-bottom: 8px;
+                                    letter-spacing: -0.5px;
+                                }
+                                .tagline {
+                                    font-size: 14px;
+                                    opacity: 0.9;
+                                    margin: 0;
+                                }
+                                .content {
+                                    padding: 40px 30px;
+                                }
+                                .greeting {
+                                    font-size: 24px;
+                                    font-weight: 600;
+                                    color: #1e293b;
+                                    margin-bottom: 16px;
+                                }
+                                .message {
+                                    color: #475569;
+                                    font-size: 16px;
+                                    margin-bottom: 24px;
+                                }
+                                .highlight-box {
+                                    background: linear-gradient(135deg, #f1f5f9 0%%, #e2e8f0 100%%);
+                                    border-left: 4px solid #8b5cf6;
+                                    padding: 24px;
+                                    border-radius: 12px;
+                                    margin: 30px 0;
+                                }
+                                .highlight-text {
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                    color: #7c3aed;
+                                    margin: 0;
+                                    text-align: center;
+                                }
+                                .feature-grid {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr;
+                                    gap: 20px;
+                                    margin: 30px 0;
+                                }
+                                .feature-card {
+                                    background: #f8fafc;
+                                    padding: 20px;
+                                    border-radius: 12px;
+                                    border: 2px solid #e2e8f0;
+                                    text-align: center;
+                                    transition: transform 0.2s ease;
+                                }
+                                .feature-card:hover {
+                                    transform: translateY(-2px);
+                                    border-color: #c4b5fd;
+                                }
+                                .feature-icon {
+                                    font-size: 32px;
+                                    margin-bottom: 12px;
+                                }
+                                .feature-title {
+                                    font-weight: 600;
+                                    color: #7c3aed;
+                                    margin-bottom: 8px;
+                                    font-size: 14px;
+                                }
+                                .feature-desc {
+                                    color: #64748b;
+                                    font-size: 13px;
+                                    margin: 0;
+                                }
+                                .cta-button {
+                                    display: inline-block;
+                                    background: linear-gradient(135deg, #8b5cf6 0%%, #7c3aed 100%%);
+                                    color: #ffffff;
+                                    text-decoration: none;
+                                    padding: 16px 32px;
+                                    border-radius: 12px;
+                                    font-weight: 600;
+                                    font-size: 16px;
+                                    margin: 20px 0;
+                                    transition: all 0.3s ease;
+                                    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+                                }
+                                .cta-button:hover {
+                                    transform: translateY(-2px);
+                                    box-shadow: 0 12px 35px rgba(139, 92, 246, 0.4);
+                                }
+                                .next-steps {
+                                    background: #fefce8;
+                                    border: 2px solid #fde047;
+                                    border-radius: 12px;
+                                    padding: 24px;
+                                    margin: 30px 0;
+                                }
+                                .next-steps-title {
+                                    font-size: 18px;
+                                    font-weight: 600;
+                                    color: #a16207;
+                                    margin-bottom: 12px;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                }
+                                .steps-list {
+                                    color: #713f12;
+                                    font-size: 14px;
+                                    margin: 0;
+                                    padding-left: 20px;
+                                }
+                                .steps-list li {
+                                    margin-bottom: 6px;
+                                }
+                                .footer {
+                                    background: #f8fafc;
+                                    padding: 30px;
+                                    text-align: center;
+                                    border-top: 1px solid #e2e8f0;
+                                }
+                                .footer-text {
+                                    color: #64748b;
+                                    font-size: 14px;
+                                    margin: 0;
+                                }
+                                .social-links {
+                                    margin-top: 20px;
+                                }
+                                .social-links a {
+                                    display: inline-block;
+                                    margin: 0 8px;
+                                    color: #8b5cf6;
+                                    text-decoration: none;
+                                    transition: color 0.2s ease;
+                                }
+                                .social-links a:hover {
+                                    color: #7c3aed;
+                                }
+                                @media (max-width: 600px) {
+                                    .feature-grid {
+                                        grid-template-columns: 1fr;
+                                    }
+                                    .email-container {
+                                        margin: 20px;
+                                    }
+                                    .content {
+                                        padding: 30px 20px;
+                                    }
+                                    .header {
+                                        padding: 30px 20px;
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="email-container">
+                                <div class="header">
+                                    <div class="logo">TeamNest</div>
+                                    <p class="tagline">by CharlseEmpire Tech</p>
+                                </div>
+                        
+                                <div class="content">
+                                    <div class="greeting">Welcome to %s, %s! 🎉</div>
+                        
+                                    <p class="message">
+                                        We're absolutely thrilled to welcome you to our team! Your journey with us begins today, 
+                                        and we're excited to see the amazing contributions you'll make.
+                                    </p>
+                        
+                                    <div class="highlight-box">
+                                        <p class="highlight-text">🌟 You're now part of something special! 🌟</p>
+                                    </div>
+                        
+                                    <div class="feature-grid">
+                                        <div class="feature-card">
+                                            <div class="feature-icon">🤝</div>
+                                            <div class="feature-title">Team Collaboration</div>
+                                            <p class="feature-desc">Connect and collaborate with your colleagues</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <div class="feature-icon">📋</div>
+                                            <div class="feature-title">Task Management</div>
+                                            <p class="feature-desc">Organize your work and track progress</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <div class="feature-icon">💬</div>
+                                            <div class="feature-title">Communication</div>
+                                            <p class="feature-desc">Stay connected with team messaging</p>
+                                        </div>
+                                        <div class="feature-card">
+                                            <div class="feature-icon">📚</div>
+                                            <div class="feature-title">Learning Resources</div>
+                                            <p class="feature-desc">Access training materials and guides</p>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="next-steps">
+                                        <div class="next-steps-title">
+                                            ⚡ Next Steps to Get Started:
+                                        </div>
+                                        <ol class="steps-list">
+                                            <li>Complete your profile setup</li>
+                                            <li>Explore your team dashboard</li>
+                                            <li>Join your first team meeting</li>
+                                            <li>Connect with your colleagues</li>
+                                        </ol>
+                                    </div>
+                        
+                                    <p class="message">
+                                        Ready to dive in? Click the button below to access your personalized workspace 
+                                        and start your exciting journey with us!
+                                    </p>
+                        
+                                    <div style="text-align: center;">
+                                        <a href="%s" class="cta-button">Access My Workspace</a>
+                                    </div>
+                        
+                                    <p class="message" style="margin-top: 24px; font-size: 14px; color: #64748b;">
+                                        Questions? Don't hesitate to reach out! Contact your manager or our 
+                                        <a href="#" style="color: #8b5cf6;">HR support team</a> - we're here to help you succeed.
+                                    </p>
+                                </div>
+                        
+                                <div class="footer">
+                                    <p class="footer-text">
+                                        © %d TeamNest by CharlseEmpire Tech. All rights reserved.
+                                    </p>
+                                    <div class="social-links">
+                                        <a href="#">Employee Handbook</a> |
+                                        <a href="#">Support Center</a> |
+                                        <a href="#">Company Portal</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </body>
+                        </html>
+                        """,
+                companyName, companyName, employeeName, link, java.time.Year.now().getValue());
+    }
 }

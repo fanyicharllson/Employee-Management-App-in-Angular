@@ -1,5 +1,6 @@
 package com.charllson.ems_backend.services;
 
+import com.charllson.ems_backend.email.EmailHtml;
 import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
 import com.charllson.ems_backend.helpers.EmailValidaor;
@@ -13,6 +14,7 @@ import com.charllson.ems_backend.respository.UserRepository;
 import com.charllson.ems_backend.users.User;
 import com.charllson.ems_backend.users.UserRole;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,12 +25,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeRegisterService {
 
+    @Value("${app.base-url:}")
+    private String baseUrl;
+
     private final EmailValidaor emailValidaor;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmployeeRegisterRepository employeeRegisterRepository;
     private final EmployeeInviteTokenRepository employeeInviteTokenRepository;
     private final EmployeeRepository employeeRepository;
+    private final EmailService emailService;
+    private final EmailHtml emailHtml;
 
     @Transactional
     public ApiResponse register(EmployeeRegisterRequest employeeRegisterRequest) {
@@ -40,7 +47,6 @@ public class EmployeeRegisterService {
 
         //Check if there already an existing user
         boolean userExists = userRepository.findByEmail(employeeRegisterRequest.getEmail()).isPresent();
-//        boolean employeeExists = employeeRepository.findByEmail(employeeRegisterRequest.getEmail()).isPresent();
         if (userExists) {
             throw new BadRequestException("Email already exists. Please use a different email.");
         }
@@ -105,6 +111,13 @@ public class EmployeeRegisterService {
         inviteToken.setUsed(true);
         inviteToken.setConfirmed_at(java.time.LocalDateTime.now());
         employeeInviteTokenRepository.save(inviteToken);
+
+        //sent employee welcome email
+        String emailLink = baseUrl + "/employee-dashboard";
+
+        // Send email
+        String verificationHtml = emailHtml.buildEmployeeWelcomeEmail(employee.getCompanyName(), employee.getFullName(), emailLink);
+        emailService.sendEmail(employee.getEmail(), "[TeamNest] Congratulations! 😎", verificationHtml);
 
         return new ApiResponse(true, "Registration successful! You can now login...");
     }
