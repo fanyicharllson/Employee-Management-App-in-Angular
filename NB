@@ -1,0 +1,179 @@
+/**
+   * Remove employee from cache (useful after deletion)
+   */
+  removeEmployeeFromCache(employeeId: string): void {
+    this.allEmployeesList = this.allEmployeesList.filter(emp => emp.id !== employeeId);
+    console.log(`Removed employee ${employeeId} from cache`);
+  }
+
+  /**
+   * Update employee in cache (useful after updates)
+   */
+  updateEmployeeInCache(employeeId: string, updatedData: Partial<Employee>): void {
+    const index = this.allEmployeesList.findIndex(emp => emp.id === employeeId);
+    if (index !== -1) {
+      this.allEmployeesList[index] = { ...this.allEmployeesList[index], ...updatedData };
+      console.log(`Updated employee ${employeeId} in cache`);
+    }
+  }
+
+
+   /**
+     * Get cached all employees data
+     */
+    getCachedAllEmployees(): Observable<HttpResponse<Employee[]> | null> {
+      if (this.allEmployeesData$) {
+        return this.allEmployeesData$.pipe(
+          catchError(() => of(null))
+        );
+      }
+      return of(null);
+    }
+
+     /**
+       * Get the last employee info that was successfully added
+       */
+      getLastEmployeeInfo(): AddEmployeeInfo | null {
+        return this.lastEmployeeInfo ? { ...this.lastEmployeeInfo } : null;
+      }
+
+      /**
+         * Get the company name only (keeping original method for backward compatibility)
+         */
+        getCompanyName(): string | null {
+          return this.getCompanyData().companyName;
+        }
+
+        /**
+         * Get company name as Observable (keeping original method for backward compatibility)
+         */
+        getCompanyName$(): Observable<string | null> {
+          return this.getCompanyData$().pipe(
+            map(data => data.companyName)
+          );
+        }
+
+        /**
+         * Get the verified email only
+         */
+        getVerifiedEmail(): string | null {
+          return this.getCompanyData().email;
+        }
+
+        /**
+         * Get verified email as Observable
+         */
+        getVerifiedEmail$(): Observable<string | null> {
+          return this.getCompanyData$().pipe(
+            map(data => data.email)
+          );
+        }
+
+        /**
+         * Verify token and update cache, then return company data
+         */
+        verifyTokenAndGetCompanyData(token: string): Observable<CompanyData> {
+          return this.confirmEmployeeInviteEmail(token).pipe(
+            switchMap(() => this.getCompanyData$()),
+            catchError((error) => {
+              console.error('Token verification failed:', error);
+              return throwError(() => error);
+            })
+          );
+
+        }
+      }
+
+
+      /**
+         * Clear all caches and storage
+         */
+        clearAllCaches(): void {
+          this.clearEmployeeCache();
+          this.clearAllEmployeesCache();
+          this.verifiedEmailData = null;
+          this.clearAllStorage();
+          console.log('All caches and storage cleared');
+        }
+
+        /**
+         * Force refresh - clears cache and makes new request
+         */
+        refreshEmployee(addEmployeeData: AddEmployeeInfo): Observable<HttpResponse<AddEmployeeResponse>> {
+          this.clearEmployeeCache();
+          return this.addEmployee(addEmployeeData);
+        }
+
+        /**
+         * Force refresh all employees
+         */
+        refreshAllEmployees(): Observable<HttpResponse<Employee[]>> {
+          return this.getAllEmployees(true);
+        }
+
+        /**
+         * Compare two employee data objects to determine if they're the same
+         */
+
+
+         verifyTokenAndGetCompanyData(token: string): Observable<CompanyData> {
+             return this.confirmEmployeeInviteEmail(token).pipe(
+               switchMap(() => this.getCompanyData$()),
+               catchError((error) => {
+                 console.error('Token verification failed:', error);
+                 return throwError(() => error);
+               })
+             );
+           }
+
+  public allEmployeesLoading$ = this.allEmployeesLoadingSubject.asObservable();
+
+
+            /**
+              * Remove employee from cache and storage
+              */
+             removeEmployeeFromCache(employeeId: string): void {
+               this.allEmployeesList = this.allEmployeesList.filter(emp => emp.id !== employeeId);
+               this.saveAllEmployeesToStorage(); // Persist changes
+               console.log(`Removed employee ${employeeId} from cache and storage`);
+             }
+
+             /**
+              * Update employee in cache and storage
+              */
+             updateEmployeeInCache(employeeId: string, updatedData: Partial<Employee>): void {
+               const index = this.allEmployeesList.findIndex(emp => emp.id === employeeId);
+               if (index !== -1) {
+                 this.allEmployeesList[index] = { ...this.allEmployeesList[index], ...updatedData };
+                 this.saveAllEmployeesToStorage(); // Persist changes
+                 console.log(`Updated employee ${employeeId} in cache and storage`);
+               }
+             }
+
+
+             /**
+                * Check if all employees cache exists
+                */
+               hasAllEmployeesCache(): boolean {
+                 return this.allEmployeesData$ !== null;
+               }
+
+               /**
+                * Clear the single employee cache and storage
+                */
+
+
+                /**
+                   * Clear all storage data
+                   */
+                  clearAllStorage(): void {
+                    try {
+                      sessionStorage.removeItem(this.STORAGE_KEYS.COMPANY_DATA);
+                      sessionStorage.removeItem(this.STORAGE_KEYS.VERIFIED_EMAIL);
+                      sessionStorage.removeItem(this.STORAGE_KEYS.LAST_EMPLOYEE);
+                      sessionStorage.removeItem(this.STORAGE_KEYS.ALL_EMPLOYEES);
+                      console.log('All storage data cleared');
+                    } catch (error) {
+                      console.error('Failed to clear storage:', error);
+                    }
+                  }
