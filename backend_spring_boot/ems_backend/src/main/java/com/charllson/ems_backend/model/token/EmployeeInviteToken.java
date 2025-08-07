@@ -48,15 +48,19 @@ public class EmployeeInviteToken {
     @Column(name = "confirmed_at")
     private LocalDateTime confirmed_at;
 
+    @Column(name = "has_account")
+    private boolean hasAccount = false;
+
 
     public EmployeeInviteToken(String token, LocalDateTime createdAt, LocalDateTime expiredAt, Employee
-            employee, Boolean used, LocalDateTime confirmed_at) {
+            employee, Boolean used, LocalDateTime confirmed_at,  boolean hasAccount) {
         this.token = token;
         this.created_at = createdAt;
         this.expired_at = expiredAt;
         this.employee = employee;
         this.confirmed_at = confirmed_at;
         this.used = used;
+        this.hasAccount = hasAccount;
 
     }
 }

@@ -29,10 +29,10 @@ import org.slf4j.Logger;
 @RestController
 @RequestMapping(path = "api/auth")
 @AllArgsConstructor
-public class UserLoginController {
+public class HrLoginController {
 
     private UserService userService;
-    private static final Logger log = LoggerFactory.getLogger(UserLoginController.class);
+    private static final Logger log = LoggerFactory.getLogger(HrLoginController.class);
     private JwtService jwtService;
 
     @PostMapping(path = "/login")

@@ -20,7 +20,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
-public class UserRegistrationService {
+public class HrRegistrationService {
 
     @Value("${app.base-url:}")
     private String baseUrl;
@@ -33,7 +33,7 @@ public class UserRegistrationService {
     private final EmailHtml emailHtml;
 
     // Constructor injection
-    public UserRegistrationService(
+    public HrRegistrationService(
             EmailValidaor emailValidaor,
             UserService userService,
             ConfirmationTokenService confirmationTokenService,

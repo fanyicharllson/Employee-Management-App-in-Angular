@@ -7,6 +7,11 @@ export interface RegistrationPayload {
   hasAcceptTerms: boolean;
 }
 
+export interface EmployeeRegistrationPayload {
+  email: string;
+  password: string;
+}
+
 // Backend reponse type
 export interface ApiResponse {
   success: boolean;

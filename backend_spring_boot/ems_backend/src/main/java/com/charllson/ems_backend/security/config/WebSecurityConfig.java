@@ -42,7 +42,7 @@ public class WebSecurityConfig {
                                 "/api/v*/user-registration/**",
                                 "/api/auth/**",
                                 "/api/employee/confirm-invite-token",
-                                "/api/employee/employee-login/**"
+                                "/api/auth/employee/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -41,7 +41,7 @@ export class Login implements OnInit, OnDestroy {
     this.handleRouteParams();
     this.checkExistingSession();
     this.checkForNotification();
-    this.subscribeToAuthMessages(); 
+    this.subscribeToAuthMessages();
   }
 
   ngOnDestroy(): void {
@@ -265,9 +265,6 @@ export class Login implements OnInit, OnDestroy {
         )
         .subscribe({
           next: (response) => {
-            console.log('User info:', response.user);
-            console.log('Current user role is: ', response.user.role);
-
             this.toastr.success(
               `Welcome back, ${response.user.name}!`,
               'Login Successful!',

@@ -1,15 +1,23 @@
-import {Component, inject, OnInit} from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {EmployeeService} from "../../../services/employee/employee.service";
+import { EmployeeService } from '../../../services/employee/employee.service';
+import { EmployeeRegisterService } from '../../../services/employee/employee.register.service';
+import { ApiResponse } from '../../../../../types/user.registration.types';
+import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'employee-signup',
   imports: [ReactiveFormsModule, CommonModule],
-  templateUrl: 'employee-signup.html'
+  templateUrl: 'employee-signup.html',
 })
-
-export class EmployeeSignupComponent implements OnInit{
+export class EmployeeSignupComponent implements OnInit {
   signupForm: FormGroup;
   showPassword = false;
   isSubmitting = false;
@@ -17,15 +25,21 @@ export class EmployeeSignupComponent implements OnInit{
   userEmail: string | null = null;
   isLoading = true;
   private employeeService = inject(EmployeeService);
+  private employeeRegistrationService = inject(EmployeeRegisterService);
+  private toast = inject(ToastrService);
+  private router = inject(Router);
 
   constructor(private fb: FormBuilder) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.pattern(/^(?=.*[A-Z])(?=.*\d).*$/)
-      ]]
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern(/^(?=.*[A-Z])(?=.*\d).*$/),
+        ],
+      ],
     });
   }
 
@@ -58,15 +72,43 @@ export class EmployeeSignupComponent implements OnInit{
     if (this.signupForm.valid) {
       this.isSubmitting = true;
 
-      // Simulate API call
-      console.log('Form submitted:', this.signupForm.value);
+      const fromValue = this.signupForm.value;
+      const formData = {
+        email: fromValue.email ?? '',
+        password: fromValue.password ?? '',
+      };
 
-      // Replace this with your actual API call
-      setTimeout(() => {
-        this.isSubmitting = false;
-        // Handle success/error here
-        alert('Account setup completed successfully!');
-      }, 2000);
+      console.log("Employee Registering Form Data: ", formData);
+
+      this.employeeRegistrationService.registerUser(formData).subscribe({
+        next: (response: ApiResponse) => {
+          this.isSubmitting = false;
+          if (response.success) {
+            const message = response.message;
+            this.toast.success(message, 'Success');
+
+            setTimeout(() => {
+              this.toast.success(message, 'Success');
+              this.router.navigate(['/login'], {
+                state: {
+                  notification:
+                    'Account setup completed successfully! Please log in.',
+                },
+              });
+            }, 3000);
+          } else {
+            this.isSubmitting = false;
+            const message = response.message;
+            this.toast.error(message, 'Error');
+            console.error('Error: ', message);
+          }
+        },
+        error: (error) => {
+          this.isSubmitting = false;
+          this.toast.error('Something went wrong! Please try again.', 'Error');
+          console.error('Error: ', error);
+        },
+      });
     }
   }
 
@@ -82,18 +124,16 @@ export class EmployeeSignupComponent implements OnInit{
 
         if (data.email) {
           this.signupForm.patchValue({
-            email: data.email
+            email: data.email,
           });
-
         }
 
         this.isLoading = false;
-
       },
       error: (error) => {
         console.error('Failed to load company data:', error);
         this.isLoading = false;
-      }
+      },
     });
   }
 }

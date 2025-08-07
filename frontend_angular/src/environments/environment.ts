@@ -4,4 +4,5 @@ export const environment = {
   endapiBaseUrl: 'http://localhost:8080/api/auth',
   onBoardingApiUrl: 'http://localhost:8080/api/user',
   employeeApiUrl: 'http://localhost:8080/api/employee',
+  employeeRegisterApiUrl: 'http://localhost:8080/api/auth/employee',
 };

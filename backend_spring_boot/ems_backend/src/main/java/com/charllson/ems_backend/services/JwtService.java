@@ -33,7 +33,7 @@ public class JwtService {
     public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
-                .claim("role", user.getRole())
+                .claim("role", "ROLE_" + user.getRole())
                 .issuedAt(new Date())
                 .expiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
                 .signWith(getSecretKey())
