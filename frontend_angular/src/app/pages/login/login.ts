@@ -179,6 +179,13 @@ export class Login implements OnInit, OnDestroy {
       // Clear the state to prevent showing notification on page refresh
       this.clearNavigationState();
     }
+    else if (state && state["redirect"]) {
+      this.router.navigate(["/login"]);
+      this.clearNavigationState();
+    }
+    else {
+      console.log("No notification found")
+    }
   }
 
   private clearNavigationState(): void {

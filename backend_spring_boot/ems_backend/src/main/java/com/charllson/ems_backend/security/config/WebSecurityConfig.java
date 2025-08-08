@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                                 "/api/v*/user-registration/**",
                                 "/api/auth/**",
                                 "/api/employee/confirm-invite-token",
+                                "/api/employee/token-hasAccount-used",
                                 "/api/auth/employee/**"
                         ).permitAll()
                         .anyRequest().authenticated())

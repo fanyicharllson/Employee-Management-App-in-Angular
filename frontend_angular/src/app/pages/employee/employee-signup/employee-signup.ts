@@ -78,7 +78,7 @@ export class EmployeeSignupComponent implements OnInit {
         password: fromValue.password ?? '',
       };
 
-      console.log("Employee Registering Form Data: ", formData);
+      // console.log("Employee Registering Form Data: ", formData);
 
       this.employeeRegistrationService.registerUser(formData).subscribe({
         next: (response: ApiResponse) => {
@@ -91,8 +91,8 @@ export class EmployeeSignupComponent implements OnInit {
               this.toast.success(message, 'Success');
               this.router.navigate(['/login'], {
                 state: {
-                  notification:
-                    'Account setup completed successfully! Please log in.',
+                  redirect:
+                    '/login'
                 },
               });
             }, 3000);

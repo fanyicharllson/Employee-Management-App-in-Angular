@@ -5,6 +5,7 @@ import { ConnectionGuard } from './core/guards/connection.guard';
 import { EmployeeChart } from './pages/employee/employee-chart/employee-chart';
 import { EmployeeLeave } from './pages/employee/employee-leave/employee-leave';
 import { ManageEmployee } from './pages/employee/manage-employee/manage-employee';
+import { EmployeeRouteGuard } from './core/guards/employee.auth.register.guard';
 
 export const routes: Routes = [
   {
@@ -47,14 +48,22 @@ export const routes: Routes = [
   //invite email for employee
   {
     path: 'confirm-invite-email/:token',
-    loadComponent: () => import('./pages/employee-confirm-token/employee-confirm-token').then((m) => m.EmployeeConfirmToken)
+    loadComponent: () =>
+      import('./pages/employee-confirm-token/employee-confirm-token').then(
+        (m) => m.EmployeeConfirmToken,
+      ),
   },
 
   //employee sign up route
   {
     path: 'employee-login',
-    loadComponent: () => import('./pages/employee/employee-signup/employee-signup').then((m) => m.EmployeeSignupComponent)
+    loadComponent: () =>
+      import('./pages/employee/employee-signup/employee-signup').then(
+        (m) => m.EmployeeSignupComponent,
+      ),
+    canActivate: [EmployeeRouteGuard],
   },
+
   // Onboarding route - only accessible if user needs to complete onboarding
   {
     path: 'onboarding',
@@ -93,6 +102,18 @@ export const routes: Routes = [
       },
     ],
   },
+
+
+  //employee - dashboard
+  {
+    path: 'employee-dashboard',
+    loadComponent: () =>
+      import('./pages/employee-dashboard/employee.dashboard').then(
+        (m) => m.EmployeeDashboard,
+      ),
+  },
+
+
   // No internet route
   {
     path: 'no-internet',

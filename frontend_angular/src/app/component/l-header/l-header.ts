@@ -2,11 +2,10 @@ import { Component, inject, OnInit } from '@angular/core';
 import { NavItem } from '../../utils/navItem';
 import { ScrollToSection } from '../../services/scroll-to-section';
 import { Router, RouterModule } from '@angular/router';
-import {NgOptimizedImage} from '@angular/common';
 
 @Component({
   selector: 'app-l-header',
-  imports: [RouterModule, NgOptimizedImage],
+  imports: [RouterModule],
   templateUrl: './l-header.html',
   styleUrl: './l-header.css',
 })
@@ -48,6 +47,6 @@ export class LHeader implements OnInit {
 
   // Navigate to register page when get started button is clicked
   navigateToRegister() {
-    this.router.navigate(['/register']);
+    this.router.navigate(['/register']).then(r => console.log('Navigated to register page: ', r));
   }
 }

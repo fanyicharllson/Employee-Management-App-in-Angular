@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +101,7 @@ public class EmployeeController {
 //            String tokeN = employeeInviteToken.getToken();
 
 
-            return ResponseEntity.ok(new ApiResponse(true, "You have been verified successfully by TeamNest! You will be redirected to complete account setup in a few seconds...", employeeEmail, companyName));
+            return ResponseEntity.ok(new ApiResponse(true, "You have been verified successfully by TeamNest! You will be redirected to complete account setup in a few seconds...", employeeEmail, companyName, token));
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(new ApiResponse(false, e.getMessage()));
         } catch (Exception e) {
@@ -108,12 +110,34 @@ public class EmployeeController {
         }
     }
 
+    //when wether the token or the user has account(boolean)
+    @GetMapping("/token-hasAccount-used")
+    public ResponseEntity<ApiResponse> getTokenHasAccountUsed(@RequestParam("token") String token) {
+        try {
+            // Get the token from the repository
+            Optional<EmployeeInviteToken> tokenOptional = employeeInviteTokenService.getToken(token);
 
+            // If token doesn't exist, return false for both
+            if (tokenOptional.isEmpty()) {
+                return ResponseEntity.ok(new ApiResponse(false, "Token not found", "false", "false"));
+            }
 
-//    @GetMapping("/token-used")
-//    public ResponseEntity<ApiResponse> getTokenUsed() {
-//
-//    }
+            EmployeeInviteToken employeeInviteToken = tokenOptional.get();
+
+            // Check if the token has been used
+            boolean isTokenUsed = Boolean.TRUE.equals(employeeInviteToken.getUsed());
+
+            // Check if the employee has an account
+            boolean hasAccount = Boolean.TRUE.equals(employeeInviteToken.getHasAccount());
+
+            return ResponseEntity.ok(new ApiResponse(true, "This user has an account and has  been verified successfully by TeamNest!",
+                    String.valueOf(isTokenUsed), String.valueOf(hasAccount)));
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse(false, "An error occurred while checking token status.", "false", "false"));
+        }
+    }
 
 
 

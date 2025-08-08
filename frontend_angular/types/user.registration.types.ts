@@ -18,4 +18,16 @@ export interface ApiResponse {
   message: string;
   code?: string;
   value?: string;
+  isTokenUsed?: string;
+  hasAccount?: string;
+  token?: string;
+}
+
+export interface TokenStatus {
+  isUsed: boolean;
+  hasAccount: boolean;
+  isConfirmed: boolean;
+  employeeEmail?: string;
+  companyName?: string;
+  lastChecked: number;
 }

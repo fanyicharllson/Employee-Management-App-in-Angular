@@ -1,11 +1,5 @@
 package com.charllson.ems_backend.services;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.charllson.ems_backend.email.EmailHtml;
 import com.charllson.ems_backend.exceptions.ApiResponse;
 import com.charllson.ems_backend.exceptions.BadRequestException;
@@ -15,15 +9,16 @@ import com.charllson.ems_backend.model.token.ConfirmationToken;
 import com.charllson.ems_backend.respository.UserRepository;
 import com.charllson.ems_backend.users.User;
 import com.charllson.ems_backend.users.UserRole;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class HrRegistrationService {
-
-    @Value("${app.base-url:}")
-    private String baseUrl;
 
     private final EmailService emailService;
     private final EmailValidaor emailValidaor;
@@ -31,6 +26,8 @@ public class HrRegistrationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final UserRepository userRepository;
     private final EmailHtml emailHtml;
+    @Value("${app.base-url:}")
+    private String baseUrl;
 
     // Constructor injection
     public HrRegistrationService(
@@ -40,7 +37,7 @@ public class HrRegistrationService {
             UserRepository userRepository,
             EmailHtml emailHtml,
             EmailService emailService
-            ) {
+    ) {
         this.confirmationTokenService = confirmationTokenService;
         this.emailValidaor = emailValidaor;
         this.userService = userService;
@@ -79,7 +76,7 @@ public class HrRegistrationService {
                         false,
                         false,
                         true
-                        ));
+                ));
     }
 
     @Transactional
@@ -121,7 +118,7 @@ public class HrRegistrationService {
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
-        String emailLink = baseUrl + "/confirm-email/token=" + token; 
+        String emailLink = baseUrl + "/confirm-email/token=" + token;
         String verificationHtml = emailHtml.buildVerificationEmail(user.getFullName(), emailLink);
         emailService.sendEmail(user.getEmail(), "[TeamNest] Verify Your TeamNest Account", verificationHtml);
 

@@ -25,12 +25,14 @@ import {
 } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 import { ApiResponse } from '../../../../types/user.registration.types';
+import { TokenService } from '../token.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
   private http = inject(HttpClient);
+  private tokenService = inject(TokenService);
 
   // Cache for the last successful employee addition
   private lastEmployeeData$: Observable<
@@ -48,7 +50,7 @@ export class EmployeeService {
 
   private employeeApiUrl = `${environment.employeeApiUrl}`;
 
-  private verifiedEmailData: { email: string; token: string } | null = null;
+  private verifiedEmailData: { email: string } | null = null;
 
   private readonly STORAGE_KEYS = {
     COMPANY_DATA: 'employee_company_data',
@@ -70,7 +72,6 @@ export class EmployeeService {
     }
   }
 
-
   private loadCompanyDataFromStorage(): CompanyData | null {
     try {
       const stored = sessionStorage.getItem(this.STORAGE_KEYS.COMPANY_DATA);
@@ -84,7 +85,6 @@ export class EmployeeService {
     return null;
   }
 
-
   private saveVerifiedEmailToStorage(): void {
     if (this.verifiedEmailData) {
       try {
@@ -97,7 +97,6 @@ export class EmployeeService {
       }
     }
   }
-
 
   private loadVerifiedEmailFromStorage(): void {
     try {
@@ -198,7 +197,6 @@ export class EmployeeService {
   addEmployee(
     addEmployeeData: AddEmployeeInfo,
   ): Observable<HttpResponse<AddEmployeeResponse>> {
-
     // Check if we're trying to add the same employee (cache hit)
     if (this.lastEmployeeData$ && this.isSameEmployeeData(addEmployeeData)) {
       console.log('Returning cached employee data for same employee');
@@ -312,7 +310,6 @@ export class EmployeeService {
     return this.allEmployeesData$;
   }
 
-
   getCachedEmployeesCount(): number {
     return this.allEmployeesList.length;
   }
@@ -343,7 +340,6 @@ export class EmployeeService {
     return of(null);
   }
 
-
   hasCacheForEmployee(employeeData: AddEmployeeInfo): boolean {
     return (
       this.lastEmployeeData$ !== null && this.isSameEmployeeData(employeeData)
@@ -362,7 +358,6 @@ export class EmployeeService {
 
     console.log('Single employee cache and storage cleared');
   }
-
 
   clearAllEmployeesCache(): void {
     this.allEmployeesData$ = null;
@@ -403,11 +398,13 @@ export class EmployeeService {
           if (response.success && response.value) {
             this.verifiedEmailData = {
               email: response.value,
-              token: token,
             };
 
-            // Save to storage
+            // Save to session storage
             this.saveVerifiedEmailToStorage();
+
+            //save token to local storage
+            this.tokenService.setVerificationToken(token);
 
             // ser company comapny name
             this.companyName = response.code ?? null;
@@ -418,10 +415,6 @@ export class EmployeeService {
             companyData.companyName = response.code;
             this.saveCompanyDataToStorage(companyData);
 
-            console.log(
-              'Email verified, cached and persisted:',
-              response.value,
-            );
           }
         }),
         catchError((error) => {

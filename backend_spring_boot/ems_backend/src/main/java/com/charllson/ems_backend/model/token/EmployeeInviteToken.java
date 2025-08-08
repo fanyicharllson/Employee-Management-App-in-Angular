@@ -49,11 +49,11 @@ public class EmployeeInviteToken {
     private LocalDateTime confirmed_at;
 
     @Column(name = "has_account")
-    private boolean hasAccount = false;
+    private Boolean hasAccount;
 
 
     public EmployeeInviteToken(String token, LocalDateTime createdAt, LocalDateTime expiredAt, Employee
-            employee, Boolean used, LocalDateTime confirmed_at,  boolean hasAccount) {
+            employee, Boolean used, LocalDateTime confirmed_at,  Boolean hasAccount) {
         this.token = token;
         this.created_at = createdAt;
         this.expired_at = expiredAt;

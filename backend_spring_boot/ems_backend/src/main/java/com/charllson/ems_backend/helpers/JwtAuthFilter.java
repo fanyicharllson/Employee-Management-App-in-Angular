@@ -30,6 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/api/v*/user-registration/**",
             "/api/auth/**",
             "/api/employee/confirm-invite-token",
+            "/api/employee/token-hasAccount-used",
             "/api/employee/employee-login/**"
     );
 
