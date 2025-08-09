@@ -51,7 +51,6 @@ export class DeleteEmployeeDialog implements OnInit {
     this.companyName = this.data.companyName;
     this.employeeName = this.data.fullName;
 
-    this.getEmployeeEmail();
   }
 
   onDelete() {
@@ -71,19 +70,10 @@ export class DeleteEmployeeDialog implements OnInit {
         this.toast.error(`An Error occurred while trying to delete ${this.data.fullName}! Please try again later.`, 'Error')
         this.isLoading = false;
         console.error('Error deleting employee:', error);
-        this.dialogRef.close(true);
+        this.dialogRef.close(false);
 
       }
     })
-  }
-
-  getEmployeeEmail(): string | null {
-    const data = sessionStorage.getItem('employee_all_employees_list');
-    if (data) {
-      const employees = JSON.parse(data);
-      this.email = employees[0]?.email || null;
-    }
-    return null;
   }
 
 }

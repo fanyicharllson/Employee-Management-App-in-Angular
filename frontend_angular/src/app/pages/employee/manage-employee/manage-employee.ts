@@ -96,7 +96,7 @@ export class ManageEmployee implements OnInit {
           const message = forceRefresh
             ? 'Employees list refreshed successfully!'
             : 'Employees loaded successfully!';
-          this.toastr.success(message, 'Success');
+          // this.toastr.success(message, 'Success');
 
           console.log(
             `Loaded ${this.allEmployees.length} employees from backend`,

@@ -205,9 +205,8 @@ export class EmployeeService {
   /*This function called upon deleting an employee. This is to get employee upto date */
   triggerRefresh(): void {
     this.refreshEmployeesSubject.next(true);
-    this.clearAllEmployeesCache();
-    this.clearEmployeeCache();
-    this.clearCompanyDataFromStorage();
+
+    this.allEmployeesData$ = null;
   }
 
   /**
