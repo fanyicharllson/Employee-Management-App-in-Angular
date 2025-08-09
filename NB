@@ -177,3 +177,66 @@
                       console.error('Failed to clear storage:', error);
                     }
                   }
+
+
+
+
+
+
+
+
+
+
+
+ /**
+   * Delete multiple employees
+   */
+  deleteMultipleEmployees(employees: { email: string; companyName: string }[]): Observable<HttpResponse<any>> {
+    this.loadingSubject.next(true);
+
+    return this.http
+        .delete<any>(`${this.employeeApiUrl}/delete-multiple-employees`, {
+          body: { employees },
+          withCredentials: true,
+          observe: 'response',
+        })
+        .pipe(
+            retry(2),
+            tap((response) => {
+              console.log(`${employees.length} employees deleted successfully`);
+
+              // Remove all deleted employees from local cache
+              employees.forEach(emp => {
+                this.removeEmployeeFromLocalCache(emp.email);
+              });
+
+              // Save updated list to storage
+              this.saveAllEmployeesToStorage();
+
+              // Clear the cached observable to force refresh on next request
+              this.allEmployeesData$ = null;
+            }),
+            shareReplay({ bufferSize: 1, refCount: false }),
+            catchError((error: HttpErrorResponse) => {
+              console.error('Deleting multiple employees failed: ', error);
+              return throwError(() => error);
+            }),
+            finalize(() => {
+              this.loadingSubject.next(false);
+            }),
+        );
+  }
+
+  /**
+   * Get employee by email from cache
+   */
+  getCachedEmployeeByEmail(email: string): Employee | null {
+    return this.allEmployeesList.find(employee => employee.email === email) || null;
+  }
+
+  /**
+   * Get employee by ID from cache
+   */
+  getCachedEmployeeById(id: string | number): Employee | null {
+    return this.allEmployeesList.find(employee => employee.id === id) || null;
+  }

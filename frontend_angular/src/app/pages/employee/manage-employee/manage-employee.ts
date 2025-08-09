@@ -1,10 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass, CommonModule } from '@angular/common';
+import { CommonModule, NgClass } from '@angular/common';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { AddEmployeeResponse } from '../../../../../types/user';
 import { ToastrService } from 'ngx-toastr';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog';
+import { DeleteEmployeeDialog } from '../../../material-angular/dialog/delete-employee-dialog/delete-employee-dialog';
 
 // Employee type is the same as AddEmployeeResponse
 type Employee = AddEmployeeResponse;
@@ -20,7 +22,7 @@ interface PaginationInfo {
   selector: 'app-manage-employee',
   imports: [FormsModule, NgClass, CommonModule],
   templateUrl: './manage-employee.html',
-  styleUrl: './manage-employee.css'
+  styleUrl: './manage-employee.css',
 })
 export class ManageEmployee implements OnInit {
   searchTerm = '';
@@ -34,6 +36,8 @@ export class ManageEmployee implements OnInit {
   protected readonly Number = Number;
   private employeeService = inject(EmployeeService);
   private toastr = inject(ToastrService);
+
+  readonly dialog = inject(MatDialog);
 
   // Real employee data from backend
   allEmployees: Employee[] = [];
@@ -54,18 +58,25 @@ export class ManageEmployee implements OnInit {
     'Name A-Z',
     'Name Z-A',
     'Department',
-    'Occupation'
+    'Occupation',
   ];
 
   pagination: PaginationInfo = {
     currentPage: 1,
     itemsPerPage: 10,
     totalItems: 0,
-    totalPages: 0
+    totalPages: 0,
   };
 
   ngOnInit() {
     this.loadEmployees();
+
+    // Listen for refresh triggers
+    this.employeeService.refreshEmployees$.subscribe(shouldRefresh => {
+      if (shouldRefresh) {
+        this.loadEmployees(true);
+      }
+    });
   }
 
   /**
@@ -82,10 +93,14 @@ export class ManageEmployee implements OnInit {
           this.populateFilterOptions();
           this.filterEmployees();
 
-          const message = forceRefresh ? 'Employees list refreshed successfully!' : 'Employees loaded successfully!';
+          const message = forceRefresh
+            ? 'Employees list refreshed successfully!'
+            : 'Employees loaded successfully!';
           this.toastr.success(message, 'Success');
 
-          console.log(`Loaded ${this.allEmployees.length} employees from backend`);
+          console.log(
+            `Loaded ${this.allEmployees.length} employees from backend`,
+          );
         } else {
           this.handleEmptyResponse();
         }
@@ -94,7 +109,7 @@ export class ManageEmployee implements OnInit {
       error: (error: HttpErrorResponse) => {
         this.handleError(error);
         this.isLoading = false;
-      }
+      },
     });
   }
 
@@ -107,7 +122,8 @@ export class ManageEmployee implements OnInit {
 
     switch (error.status) {
       case 401:
-        this.errorMessage = 'You are not authorized to view employees. Please login again.';
+        this.errorMessage =
+          'You are not authorized to view employees. Please login again.';
         this.toastr.error(this.errorMessage, 'Unauthorized');
         break;
 
@@ -121,7 +137,8 @@ export class ManageEmployee implements OnInit {
         break;
 
       case 400:
-        const badRequestMessage = error.error?.message || 'Bad request. Please check your data.';
+        const badRequestMessage =
+          error.error?.message || 'Bad request. Please check your data.';
         this.errorMessage = badRequestMessage;
         this.toastr.error(badRequestMessage, 'Bad Request');
         break;
@@ -132,12 +149,15 @@ export class ManageEmployee implements OnInit {
         break;
 
       case 0:
-        this.errorMessage = 'Network error. Please check your internet connection.';
+        this.errorMessage =
+          'Network error. Please check your internet connection.';
         this.toastr.error(this.errorMessage, 'Network Error');
         break;
 
       default:
-        const defaultMessage = error.error?.message || 'An unexpected error occurred. Please try again.';
+        const defaultMessage =
+          error.error?.message ||
+          'An unexpected error occurred. Please try again.';
         this.errorMessage = defaultMessage;
         this.toastr.error(defaultMessage, 'Error');
         break;
@@ -160,11 +180,15 @@ export class ManageEmployee implements OnInit {
    */
   private populateFilterOptions() {
     // Get unique departments
-    const uniqueDepartments = [...new Set(this.allEmployees.map(emp => emp.department))];
+    const uniqueDepartments = [
+      ...new Set(this.allEmployees.map((emp) => emp.department)),
+    ];
     this.departments = ['All', ...uniqueDepartments.sort()];
 
     // Get unique occupations
-    const uniqueOccupations = [...new Set(this.allEmployees.map(emp => emp.occupation))];
+    const uniqueOccupations = [
+      ...new Set(this.allEmployees.map((emp) => emp.occupation)),
+    ];
     this.occupations = ['All', ...uniqueOccupations.sort()];
   }
 
@@ -181,9 +205,14 @@ export class ManageEmployee implements OnInit {
    */
   searchEmployees() {
     if (this.searchTerm.trim()) {
-      const results = this.employeeService.searchCachedEmployees(this.searchTerm);
+      const results = this.employeeService.searchCachedEmployees(
+        this.searchTerm,
+      );
       this.filteredEmployees = results;
-      this.toastr.info(`Found ${results.length} employees matching "${this.searchTerm}"`, 'Search Results');
+      this.toastr.info(
+        `Found ${results.length} employees matching "${this.searchTerm}"`,
+        'Search Results',
+      );
     } else {
       this.filteredEmployees = [...this.allEmployees];
     }
@@ -199,22 +228,29 @@ export class ManageEmployee implements OnInit {
 
     // Apply search filter
     if (this.searchTerm) {
-      filtered = filtered.filter(emp =>
-        emp.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.department.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        emp.occupation.toLowerCase().includes(this.searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (emp) =>
+          emp.fullName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          emp.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          emp.department
+            .toLowerCase()
+            .includes(this.searchTerm.toLowerCase()) ||
+          emp.occupation.toLowerCase().includes(this.searchTerm.toLowerCase()),
       );
     }
 
     // Apply department filter
     if (this.selectedDepartment && this.selectedDepartment !== 'All') {
-      filtered = filtered.filter(emp => emp.department === this.selectedDepartment);
+      filtered = filtered.filter(
+        (emp) => emp.department === this.selectedDepartment,
+      );
     }
 
     // Apply occupation filter
     if (this.selectedOccupation && this.selectedOccupation !== 'All') {
-      filtered = filtered.filter(emp => emp.occupation === this.selectedOccupation);
+      filtered = filtered.filter(
+        (emp) => emp.occupation === this.selectedOccupation,
+      );
     }
 
     // Apply sorting
@@ -243,7 +279,9 @@ export class ManageEmployee implements OnInit {
 
   updatePagination() {
     this.pagination.totalItems = this.filteredEmployees.length;
-    this.pagination.totalPages = Math.ceil(this.pagination.totalItems / this.pagination.itemsPerPage);
+    this.pagination.totalPages = Math.ceil(
+      this.pagination.totalItems / this.pagination.itemsPerPage,
+    );
 
     // Ensure current page is valid
     if (this.pagination.currentPage > this.pagination.totalPages) {
@@ -254,9 +292,13 @@ export class ManageEmployee implements OnInit {
   }
 
   updatePaginatedEmployees() {
-    const startIndex = (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
+    const startIndex =
+      (this.pagination.currentPage - 1) * this.pagination.itemsPerPage;
     const endIndex = startIndex + this.pagination.itemsPerPage;
-    this.paginatedEmployees = this.filteredEmployees.slice(startIndex, endIndex);
+    this.paginatedEmployees = this.filteredEmployees.slice(
+      startIndex,
+      endIndex,
+    );
   }
 
   // Dropdown toggle methods
@@ -378,7 +420,8 @@ export class ManageEmployee implements OnInit {
   }
 
   getPageButtonClass(page: number | string): string {
-    const baseClass = 'px-3 py-2 text-sm font-medium border border-gray-300 transition-colors';
+    const baseClass =
+      'px-3 py-2 text-sm font-medium border border-gray-300 transition-colors';
 
     if (typeof page === 'number' && page === this.pagination.currentPage) {
       return `${baseClass} bg-purple-600 text-white border-purple-600`;
@@ -397,7 +440,7 @@ export class ManageEmployee implements OnInit {
       'bg-red-100 text-red-800',
       'bg-yellow-100 text-yellow-800',
       'bg-indigo-100 text-indigo-800',
-      'bg-pink-100 text-pink-800'
+      'bg-pink-100 text-pink-800',
     ];
 
     const index = department.length % colors.length;
@@ -424,22 +467,9 @@ export class ManageEmployee implements OnInit {
     this.toastr.info('All filters cleared', 'Filters Reset');
   }
 
-  /**
-   * Delete employee (you'll need to implement this in your service)
-   */
   deleteEmployee(employee: Employee) {
-    if (confirm(`Are you sure you want to delete ${employee.fullName}?`)) {
-      // TODO: Implement delete in service
-      // this.employeeService.deleteEmployee(employee.id).subscribe({
-      //   next: () => {
-      //     this.employeeService.removeEmployeeFromCache(employee.id);
-      //     this.loadEmployees();
-      //     this.toastr.success(`${employee.fullName} deleted successfully`, 'Employee Deleted');
-      //   },
-      //   error: (error) => this.handleError(error)
-      // });
-
-      this.toastr.info('Delete functionality not implemented yet', 'Coming Soon');
-    }
+    this.dialog.open(DeleteEmployeeDialog, {
+      data: employee,
+    });
   }
 }

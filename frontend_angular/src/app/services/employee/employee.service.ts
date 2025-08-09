@@ -43,6 +43,9 @@ export class EmployeeService {
   private allEmployeesData$: Observable<HttpResponse<Employee[]>> | null = null;
   private allEmployeesList: Employee[] = [];
 
+  private refreshEmployeesSubject = new BehaviorSubject<boolean>(false);
+  public refreshEmployees$ = this.refreshEmployeesSubject.asObservable();
+
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private allEmployeesLoadingSubject = new BehaviorSubject<boolean>(false);
 
@@ -69,6 +72,14 @@ export class EmployeeService {
       );
     } catch (error) {
       console.error('Failed to save company data to storage:', error);
+    }
+  }
+
+  private clearCompanyDataFromStorage(): void {
+    try {
+      sessionStorage.removeItem(this.STORAGE_KEYS.COMPANY_DATA);
+    } catch (error) {
+      console.error('Failed to clear company data from storage:', error);
     }
   }
 
@@ -141,25 +152,24 @@ export class EmployeeService {
     }
   }
 
-  /**
-   * Save all employees list to sessionStorage
-   */
+
   private saveAllEmployeesToStorage(): void {
-    if (this.allEmployeesList.length > 0) {
-      try {
+    try {
+      if (this.allEmployeesList.length > 0) {
         sessionStorage.setItem(
-          this.STORAGE_KEYS.ALL_EMPLOYEES,
-          JSON.stringify(this.allEmployeesList),
+            this.STORAGE_KEYS.ALL_EMPLOYEES,
+            JSON.stringify(this.allEmployeesList),
         );
-        console.log(
-          `Saved ${this.allEmployeesList.length} employees to sessionStorage`,
-        );
-      } catch (error) {
-        console.error('Failed to save employees list to storage:', error);
+        console.log(`Saved ${this.allEmployeesList.length} employees to sessionStorage`);
+      } else {
+        // Clear sessionStorage when no employees
+        sessionStorage.removeItem(this.STORAGE_KEYS.ALL_EMPLOYEES);
+        console.log('Cleared employees');
       }
+    } catch (error) {
+      console.error('Failed to save/clear employees list to/from storage:', error);
     }
   }
-
   /**
    * Load all employees list from sessionStorage
    */
@@ -168,6 +178,7 @@ export class EmployeeService {
       const stored = sessionStorage.getItem(this.STORAGE_KEYS.ALL_EMPLOYEES);
       if (stored) {
         this.allEmployeesList = JSON.parse(stored);
+
         console.log(
           `Loaded ${this.allEmployeesList.length} employees from sessionStorage`,
         );
@@ -189,6 +200,14 @@ export class EmployeeService {
 
     // Load all employees list
     this.loadAllEmployeesFromStorage();
+  }
+
+  /*This function called upon deleting an employee. This is to get employee upto date */
+  triggerRefresh(): void {
+    this.refreshEmployeesSubject.next(true);
+    this.clearAllEmployeesCache();
+    this.clearEmployeeCache();
+    this.clearCompanyDataFromStorage();
   }
 
   /**
@@ -495,4 +514,75 @@ export class EmployeeService {
   getCompanyName(): string | null | undefined {
     return this.companyName;
   }
+
+  /**
+   * Delete employee by email and company name
+   */
+  deleteEmployee(email: string, companyName: string): Observable<HttpResponse<any>> {
+    this.loadingSubject.next(true);
+
+    const deleteData = { email, companyName };
+
+    return this.http
+        .delete<any>(`${this.employeeApiUrl}/delete-employee`, {
+          body: deleteData,
+          withCredentials: true,
+          observe: 'response',
+        })
+        .pipe(
+            retry(2),
+            tap((response) => {
+              console.log(`Employee ${email} deleted successfully from ${companyName}`);
+
+              // Remove from local cache
+              this.removeEmployeeFromLocalCache(email);
+
+              // Save updated list to storage
+              this.saveAllEmployeesToStorage();
+            }),
+            shareReplay({ bufferSize: 1, refCount: false }),
+            catchError((error: HttpErrorResponse) => {
+              console.error('Deleting employee failed: ', error);
+              return throwError(() => error);
+            }),
+            finalize(() => {
+              this.loadingSubject.next(false);
+            }),
+        );
+  }
+
+
+  removeEmployeeFromCache(employeeId: string | number): void {
+    if (this.allEmployeesList.length > 0) {
+      const initialLength = this.allEmployeesList.length;
+      this.allEmployeesList = this.allEmployeesList.filter(
+          employee => employee.id !== employeeId
+      );
+
+      if (this.allEmployeesList.length < initialLength) {
+        console.log(`Employee with ID ${employeeId} removed from cache`);
+        this.saveAllEmployeesToStorage();
+
+        // Clear the cached observable to force refresh on next request
+        this.allEmployeesData$ = null;
+      } else {
+        console.warn(`Employee with ID ${employeeId} not found in cache`);
+      }
+    }
+  }
+
+
+  private removeEmployeeFromLocalCache(email: string): void {
+    if (this.allEmployeesList.length > 0) {
+      const initialLength = this.allEmployeesList.length;
+      this.allEmployeesList = this.allEmployeesList.filter(
+          employee => employee.email !== email
+      );
+
+      if (this.allEmployeesList.length < initialLength) {
+        console.log(`Employee with email ${email} removed from local cache`);
+      }
+    }
+  }
+
 }
