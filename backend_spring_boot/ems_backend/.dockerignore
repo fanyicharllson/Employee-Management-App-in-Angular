@@ -1,0 +1,33 @@
+# Docker ignore for faster builds and smaller contexts
+
+# Maven / Build
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.exe
+.mvn/wrapper/maven-wrapper.sh
+.mvn/wrapper/MavenWrapperDownloader.java
+.mvn/.gradle
+
+# IDE
+.idea
+.project
+.classpath
+.settings
+*.iml
+
+# Git
+.git
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node/Angular (not needed in backend context)
+node_modules
+
+# Target build output (built inside Docker)
+target
+
+# Logs
+logs
+*.log

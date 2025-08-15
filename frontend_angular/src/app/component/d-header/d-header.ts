@@ -71,8 +71,8 @@ export class DHeader implements OnInit {
   }
 
   profileRoutes = signal<ProfileRoute[]>([
-    { text: 'Profile', route: 'profile', icon: this.Profile },
-    { text: 'Settings', route: 'setting', icon: this.Setting },
+    { text: 'Profile', route: 'hr/profile', icon: this.Profile },
+    { text: 'Settings', route: 'hr/setting', icon: this.Setting },
     { text: 'Help', route: 'help', icon: this.Help },
     { text: 'Sign Out', route: 'login', btn: true, icon: this.ArrowLeft },
   ]);
@@ -105,9 +105,8 @@ export class DHeader implements OnInit {
   }
 
   handleProfileClick(profileItem: ProfileRoute): void {
-    // Handle regular profile menu clicks
-    console.log('Navigating to:', profileItem.route);
-    // this.router.navigate([profileItem.route]);
+    console.log('Profile item clicked:', profileItem);
+    this.router.navigate([profileItem.route]);
     this.closeProfileMenu();
   }
 }

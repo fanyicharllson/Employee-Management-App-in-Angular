@@ -1,0 +1,129 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full">
+    <!-- Main Card -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8 text-center border border-purple-100">
+      <!-- Icon -->
+      <div class="mb-6">
+        <div class="mx-auto w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center">
+          <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z">
+            </path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Content -->
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        {{ pageTitle || 'Feature Under Development' }}
+      </h1>
+
+      <p class="text-xl text-gray-600 mb-2">
+        We're working hard to bring you this feature!
+      </p>
+
+      <p class="text-gray-500 mb-8">
+        {{ description || 'This section of the Employee Management System is currently being developed and will be available soon.' }}
+      </p>
+
+      <!-- Progress Indicator -->
+      <div class="mb-8">
+        <div class="flex justify-between text-sm text-gray-600 mb-2">
+          <span>Development Progress</span>
+          <span>{{ progress || 60 }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div class="bg-gradient-to-r from-purple-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+               [style.width.%]="progress || 60">
+          </div>
+        </div>
+      </div>
+
+      <!-- Expected Timeline -->
+      <div class="bg-purple-50 rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-center mb-3">
+          <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+          <h3 class="text-lg font-semibold text-purple-900">Expected Timeline</h3>
+        </div>
+        <p class="text-purple-700">
+          {{ timeline || 'This feature is expected to be available in the next release cycle.' }}
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button
+          (click)="goBack()"
+          class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200 shadow-lg hover:shadow-xl cursor-pointer">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Go Back
+        </button>
+
+        <button
+          (click)="goToDashboard()"
+          class="px-6 py-3 bg-white text-purple-600 font-semibold rounded-lg border-2 border-purple-600 hover:bg-purple-50 transition-colors duration-200 cursor-pointer">
+          <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z">
+            </path>
+          </svg>
+          Go to Dashboard
+        </button>
+      </div>
+
+      <!-- Contact Info (Optional) -->
+      <div class="mt-8 pt-6 border-t border-gray-200" *ngIf="showContactInfo">
+        <p class="text-sm text-gray-500 mb-2">Have questions or suggestions?</p>
+        <a href="mailto:fanyicharllson@gmail.com"
+           class="text-purple-600 hover:text-purple-700 font-medium text-sm">
+          Contact our development team
+        </a>
+      </div>
+    </div>
+
+    <!-- Additional Info Cards -->
+    <div class="grid md:grid-cols-3 gap-4 mt-8" *ngIf="showAdditionalInfo">
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+        <div class="w-12 h-12 bg-blue-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z">
+            </path>
+          </svg>
+        </div>
+        <h4 class="font-semibold text-gray-900 mb-2">Fast Development</h4>
+        <p class="text-sm text-gray-600">We're using agile methodology to deliver features quickly.</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+        <div class="w-12 h-12 bg-green-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
+            </path>
+          </svg>
+        </div>
+        <h4 class="font-semibold text-gray-900 mb-2">Quality Assured</h4>
+        <p class="text-sm text-gray-600">Every feature undergoes thorough testing before release.</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow-lg text-center">
+        <div class="w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+          <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+            </path>
+          </svg>
+        </div>
+        <h4 class="font-semibold text-gray-900 mb-2">User Focused</h4>
+        <p class="text-sm text-gray-600">Built with employee management best practices in mind.</p>
+      </div>
+    </div>
+  </div>
+</div>

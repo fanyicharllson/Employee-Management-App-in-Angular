@@ -36,10 +36,12 @@
   </p>
 
   <!-- CTA Button -->
-  <a
-    class="inline-block px-6 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition duration-300"
-    routerLink="/"
-  >
-    ← Back to Home
-  </a>
+  <button
+    (click)="goBack()"
+    class="px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 duration-300 shadow-lg hover:shadow-xl cursor-pointer hover:scale-110 transition-all">
+    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+    </svg>
+    Go Back
+  </button>
 </div>

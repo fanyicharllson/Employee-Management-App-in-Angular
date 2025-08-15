@@ -1,0 +1,99 @@
+version: "3.9" # Docker Compose file format version
+
+services:
+  # ============================
+  # BACKEND SERVICE (Spring Boot)
+  # ============================
+  ems-backend:
+    build:
+      context: ./backend_spring_boot/ems_backend # Path to backend source code
+      dockerfile: Dockerfile                     # Use backend Dockerfile
+      args:
+        - SKIP_TESTS=true                        # Build arg to skip running tests
+    image: ems-backend:latest                     # Name for the built backend image
+    container_name: ems-backend                   # Name for running container
+    ports:
+      - "8080:8080"                               # Map host port 8080 -> container port 8080
+    environment:
+      # Database connection details
+      - DB_URL=${DB_URL:-jdbc:postgresql://postgres:5432/ems}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+
+      # Base URL for the backend API
+      - BASE_URL=${BASE_URL:-http://localhost:8080}
+
+      # Email sending configuration (Resend API)
+      - RESEND_API_KEY=${RESEND_API_KEY:-}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-no-reply@example.com}
+
+      # Spring Boot profile (e.g., dev, prod)
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-}
+
+      # Java JVM tuning
+      - JAVA_OPTS=${JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:InitialRAMPercentage=50 -XX:+UseG1GC}
+
+    depends_on:
+      - postgres # Wait for database container before starting
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"] # Check if backend is listening
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    restart: unless-stopped # Auto restart if container crashes
+    networks:
+      - ems-net
+
+  # ============================
+  # DATABASE SERVICE (PostgreSQL)
+  # ============================
+  postgres:
+    image: postgres:16-alpine # Lightweight Postgres image
+    container_name: ems-postgres
+    environment:
+      - POSTGRES_DB=ems
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    ports:
+      - "5432:5432" # Map database port for local access
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist database data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ems"] # Check if DB is ready
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ems-net
+
+  # ============================
+  # FRONTEND SERVICE (Angular + Nginx)
+  # ============================
+  ems-frontend:
+    build:
+      context: ./frontend_angular  # Path to frontend Angular app
+      dockerfile: Dockerfile   # Use frontend Dockerfile
+      args:
+        - BASE_HREF=/          # Angular base href (root path)
+    image: ems-frontend:latest # Name for the built frontend image
+    container_name: ems-frontend
+    ports:
+      - "80:80"                # Map host port 80 -> container port 80 (HTTP)
+    depends_on:
+      - ems-backend            # Ensure backend starts before frontend
+    networks:
+      - ems-net
+
+# ============================
+# NETWORK CONFIGURATION
+# ============================
+networks:
+  ems-net:
+    driver: bridge # Default network type
+
+# ============================
+# VOLUME CONFIGURATION
+# ============================
+volumes:
+  pgdata: # Named volume for database persistence

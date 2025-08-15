@@ -65,12 +65,12 @@ export class Sidebar {
     {
       icon: this.Dollarsign,
       label: 'Payroll',
-      route: 'hr/recruitment',
+      route: 'hr/payroll',
     },
     {
       icon: this.Clock,
       label: 'Timesheet',
-      route: 'hr/recruitment',
+      route: 'hr/timesheet',
     },
     // { icon: this.MessageSquare, label: 'Report', active: false },
     // { icon: this.FileText, label: 'Files', active: false },

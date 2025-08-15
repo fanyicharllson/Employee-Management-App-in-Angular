@@ -6,6 +6,8 @@ import { EmployeeChart } from './pages/employee/employee-chart/employee-chart';
 import { EmployeeLeave } from './pages/employee/employee-leave/employee-leave';
 import { ManageEmployee } from './pages/employee/manage-employee/manage-employee';
 import { EmployeeRouteGuard } from './core/guards/employee.auth.register.guard';
+import { Payroll } from './pages/payroll/payroll';
+import { AppUnderDevelopment } from './pages/app-underdevelopment/app-under-development';
 
 export const routes: Routes = [
   {
@@ -74,7 +76,9 @@ export const routes: Routes = [
     canActivate: [OnboardingGuard, ConnectionGuard], // Use OnboardingGuard instead
   },
 
-  // Dashboard and protected routes
+  // Dashboard and protected routes===============================================================================================
+  //HR dashboard===============
+  //==================================================================================================================================
   {
     path: '',
     loadComponent: () => import('./pages/layout/layout').then((m) => m.Layout),
@@ -97,22 +101,91 @@ export const routes: Routes = [
           { path: '', redirectTo: 'manage', pathMatch: 'full' },
           { path: 'manage', component: ManageEmployee },
           { path: 'chart', component: EmployeeChart },
-          { path: 'leave', component: EmployeeLeave },
+          { path: 'leave', component: AppUnderDevelopment },
+          { path: 'payroll', component: Payroll },
         ],
+      },
+      {
+        path: 'hr/payroll',
+        loadComponent: () =>
+          import('./pages/app-underdevelopment/app-under-development').then(
+            (m) => m.AppUnderDevelopment,
+          ),
+        canActivate: [AuthGuard, ConnectionGuard],
+        data: { onboardingRequired: true },
+      },
+      {
+        path: 'hr/reports',
+        loadComponent: () =>
+          import('./pages/app-underdevelopment/app-under-development').then(
+            (m) => m.AppUnderDevelopment,
+          ),
+        canActivate: [AuthGuard, ConnectionGuard],
+      },
+      {
+        path: 'hr/timesheet',
+        loadComponent: () =>
+          import('./pages/app-underdevelopment/app-under-development').then(
+            (m) => m.AppUnderDevelopment,
+          ),
+        canActivate: [AuthGuard, ConnectionGuard],
+      },
+      {
+        path: 'hr/schedule',
+        loadComponent: () =>
+          import('./pages/app-underdevelopment/app-under-development').then(
+            (m) => m.AppUnderDevelopment,
+          ),
+        canActivate: [AuthGuard, ConnectionGuard],
+      },
+      {
+        path: 'hr/recruitment',
+        loadComponent: () =>
+          import('./pages/app-underdevelopment/app-under-development').then(
+            (m) => m.AppUnderDevelopment,
+          ),
+        canActivate: [AuthGuard, ConnectionGuard],
       },
     ],
   },
 
+  //Settings page in employeee dasboard
+  {
+    path: 'hr/setting',
+    loadComponent: () =>
+      import('./pages/app-underdevelopment/app-under-development').then(
+        (m) => m.AppUnderDevelopment,
+      ),
+    canActivate: [AuthGuard, ConnectionGuard],
+  },
+  {
+    path: 'hr/profile',
+    loadComponent: () =>
+      import('./pages/app-underdevelopment/app-under-development').then(
+        (m) => m.AppUnderDevelopment,
+      ),
+    canActivate: [AuthGuard, ConnectionGuard],
+  },
+  {
+    path: 'help',
+    loadComponent: () =>
+      import('./pages/app-underdevelopment/app-under-development').then(
+        (m) => m.AppUnderDevelopment,
+      ),
+    canActivate: [AuthGuard, ConnectionGuard],
+  },
 
-  //employee - dashboard
+  // Dashboard and protected routes===============================================================================================
+  //employee dashboard===============
+  //==================================================================================================================================
   {
     path: 'employee-dashboard',
     loadComponent: () =>
       import('./pages/employee-dashboard/employee.dashboard').then(
         (m) => m.EmployeeDashboard,
       ),
-  },
 
+  },
 
   // No internet route
   {
@@ -129,5 +202,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/not-found/not-found').then((m) => m.NotFound),
     canActivate: [ConnectionGuard],
+    title: 'Page not found',
   },
 ];

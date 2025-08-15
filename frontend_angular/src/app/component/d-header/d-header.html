@@ -91,13 +91,12 @@
                     "
               >
                 <a
-                  [href]="profileItem.btn ? `/login` : '#'"
                   role="button"
                   tabindex="0"
                   [class]="
                         profileItem.btn
                           ? 'flex items-center px-5 py-3 text-white no-underline gap-2 cursor-pointer'
-                          : 'flex items-center px-5 py-3 text-black no-underline gap-2'
+                          : 'flex items-center px-5 py-3 text-black no-underline gap-2 cursor-pointer'
                       "
                   (click)="
                         profileItem.btn
