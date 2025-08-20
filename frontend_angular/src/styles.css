@@ -1,24 +1,33 @@
+/* -----------------------------
+   1️⃣ IMPORTS (must come first)
+-------------------------------*/
 @import "tailwindcss";
 @import "ngx-toastr/toastr";
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+/*@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");*/
 
+/* -----------------------------
+   2️⃣ GLOBAL STYLES
+-------------------------------*/
 * {
   font-family: "Inter", sans-serif;
-  /*outline: 1px solid red;*/
-
 
 }
 
-/*html, body { height: 100%; }*/
-/*body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }*/
-
-
-/* styling for show-notification */
+/* -----------------------------
+   3️⃣ TAILWIND CUSTOM UTILITIES
+-------------------------------*/
 @layer utilities {
+  /* Fade-in animation for notifications */
   .animate-fade-in-down {
     @apply animate-[fadeInDown_0.3s_ease-out];
   }
 
+  /* Custom purple text if needed */
+  .text-purple-600 {
+    @apply text-purple-600;
+  }
+
+  /* Define keyframes */
   @keyframes fadeInDown {
     0% {
       opacity: 0;
@@ -31,9 +40,9 @@
   }
 }
 
-/* Custom Toastr Styles */
-
-/* Base toast styling */
+/* -----------------------------
+   4️⃣ TOASTR CUSTOM STYLES
+-------------------------------*/
 .toast-container .ngx-toastr {
   width: 350px !important;
   min-height: 60px !important;
@@ -44,45 +53,41 @@
   position: relative !important;
 }
 
-/* Custom colors */
 .toast-purple {
-  background-color: #7e22ce !important;
-  color: white !important;
+  @apply bg-purple-600 text-white;
+  border-radius: 8px;
+  padding: 15px 20px;
 }
 
 .toast-warning {
-  background-color: #dc2626 !important;
-  color: white !important;
+  @apply bg-red-600 text-white;
+  border-radius: 8px;
+  padding: 15px 20px;
 }
 
-/* Progress bar */
+/* Progress bar inside toast */
 .toast-progress {
   background-color: rgba(255, 255, 255, 0.3) !important;
   height: 3px !important;
 }
 
-/* Custom scrollbar with new colors */
+/* -----------------------------
+   5️⃣ SCROLLBAR CUSTOMIZATION
+-------------------------------*/
 ::-webkit-scrollbar {
   width: 10px;
 }
 
-/* Scrollbar Track */
 ::-webkit-scrollbar-track {
   background: rgba(30, 41, 59, 0.3);
 }
 
-/* Scrollbar Thumb */
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #8e44ad, #6c5ce7);
-  /* softer purples */
   border-radius: 6px;
+  transition: background 0.3s ease;
 }
 
-/* On Hover */
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #7d3cbf, #5a4bcf);
-}
-
-::-webkit-scrollbar-thumb {
-  transition: background 0.3s ease;
 }

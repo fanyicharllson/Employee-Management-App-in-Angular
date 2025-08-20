@@ -1,3 +1,5 @@
-.active {
-  @apply text-purple-600 border-b-2 border-purple-600;
-}
+/*@layer utilities {*/
+/*  .active {*/
+/*    @apply text-purple-600 border-b-2 border-purple-600;*/
+/*  }*/
+/*}*/
