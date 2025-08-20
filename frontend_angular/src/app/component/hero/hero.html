@@ -18,12 +18,14 @@
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
           <button
-            class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-purple-50 transition-all transform hover:scale-105 pulse-glow"
+            class="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-purple-50 transition-all transform hover:scale-105 pulse-glow cursor-pointer"
+            (click)="navigateToRegiter()"
           >
             Start Free Trial
           </button>
           <button
-            class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all"
+            class="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-purple-600 transition-all cursor-pointer"
+            (click)="showSuccessToast()"
           >
             Watch Demo
           </button>
