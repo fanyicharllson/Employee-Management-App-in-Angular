@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend_angular/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/employee-management-app/browser"
+      }
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
