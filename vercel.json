@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend_angular && npm ci && npm run build",
-  "outputDirectory": "frontend_angular/dist/employee-management-app/browser",
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "dist/employee-management-app/browser",
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
   ]
