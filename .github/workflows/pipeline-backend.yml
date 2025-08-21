@@ -1,0 +1,79 @@
+# .github/workflows/build-and-push.yml
+# This workflow only builds and pushes to Docker Hub (no Render deployment yet)
+
+name: Build and Push TeamNest Backend to Docker Hub
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend_spring_boot/**']
+  workflow_dispatch:
+
+env:
+  DOCKER_IMAGE: charllson717/ems-backend
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run tests
+        working-directory: ./backend_spring_boot/ems_backend
+        run: |
+          chmod +x ./mvnw
+          ./mvnw test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend_spring_boot/ems_backend
+          dockerfile: ./backend_spring_boot/ems_backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64
+          build-args: |
+            SKIP_TESTS=true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Success Message
+        run: |
+          echo "## 🎉 Docker Image Built and Pushed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`charllson717/ems-backend:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Repository:** https://hub.docker.com/r/charllson717/ems-backend" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. ✅ Image is now available on Docker Hub" >> $GITHUB_STEP_SUMMARY
+          echo "2. 📝 Create Render service using: \`docker.io/charllson717/ems-backend:latest\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. 🔗 Get Deploy Hook URL from Render" >> $GITHUB_STEP_SUMMARY
+          echo "4. 🔐 Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets" >> $GITHUB_STEP_SUMMARY

@@ -17,24 +17,25 @@ services:
     environment:
       # Database connection details
       - DB_URL=${DB_URL:-jdbc:postgresql://postgres:5432/ems}
-      - DB_USERNAME=${DB_USERNAME:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_USERNAME=${DB_USERNAME:-neondb_owner}
+      - DB_PASSWORD=${DB_PASSWORD:-}
 
       # Base URL for the backend API
-      - BASE_URL=${BASE_URL:-http://localhost:8080}
+      - BASE_URL=${BASE_URL:-https://www.teamnest.me}
 
       # Email sending configuration (Resend API)
       - RESEND_API_KEY=${RESEND_API_KEY:-}
-      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-no-reply@example.com}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-}
 
       # Spring Boot profile (e.g., dev, prod)
-      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
 
       # Java JVM tuning
       - JAVA_OPTS=${JAVA_OPTS:--XX:MaxRAMPercentage=75 -XX:InitialRAMPercentage=50 -XX:+UseG1GC}
 
     depends_on:
-      - postgres # Wait for database container before starting
+      postgres:
+        condition: service_healthy # Wait for database to be healthy, not just started
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 8080 || exit 1"] # Check if backend is listening
       interval: 30s
@@ -44,6 +45,15 @@ services:
     restart: unless-stopped # Auto restart if container crashes
     networks:
       - ems-net
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
 
   # ============================
   # DATABASE SERVICE (PostgreSQL)
@@ -53,19 +63,31 @@ services:
     container_name: ems-postgres
     environment:
       - POSTGRES_DB=ems
-      - POSTGRES_USER=postgres
+      - POSTGRES_USER=neondb_owner
       - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      # Optional: Better logging and performance
+      - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
     ports:
       - "5432:5432" # Map database port for local access
     volumes:
       - pgdata:/var/lib/postgresql/data # Persist database data
+      # Optional: Custom PostgreSQL configuration
+      # - ./postgres.conf:/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d ems"] # Check if DB is ready
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    restart: unless-stopped
     networks:
       - ems-net
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
 
   # ============================
   # FRONTEND SERVICE (Angular + Nginx)
@@ -73,17 +95,34 @@ services:
   ems-frontend:
     build:
       context: ./frontend_angular  # Path to frontend Angular app
-      dockerfile: Dockerfile   # Use frontend Dockerfile
+      dockerfile: Dockerfile       # Use frontend Dockerfile
       args:
-        - BASE_HREF=/          # Angular base href (root path)
+        - BASE_HREF=/              # Angular base href (root path)
+        # Optional: Pass API URL for build-time configuration
+        - API_URL=${BASE_URL:-http://localhost:8080}
     image: ems-frontend:latest # Name for the built frontend image
     container_name: ems-frontend
     ports:
       - "80:80"                # Map host port 80 -> container port 80 (HTTP)
-    depends_on:
-      - ems-backend            # Ensure backend starts before frontend
+      - "443:443"              # Optional: HTTPS port for production
+    # Frontend doesn't need to wait for backend (makes HTTP calls)
+    # depends_on:
+    #   - ems-backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
     networks:
       - ems-net
+    # Optional: Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.25'
 
 # ============================
 # NETWORK CONFIGURATION
@@ -91,9 +130,19 @@ services:
 networks:
   ems-net:
     driver: bridge # Default network type
+    # Optional: Custom subnet
+    # ipam:
+    #   config:
+    #     - subnet: 172.20.0.0/16
 
 # ============================
 # VOLUME CONFIGURATION
 # ============================
 volumes:
   pgdata: # Named volume for database persistence
+    driver: local
+    # Optional: Use bind mount for easier access
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: ./data/postgres
