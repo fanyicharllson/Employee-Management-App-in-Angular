@@ -1,5 +1,5 @@
 # .github/workflows/build-and-push.yml
-# This workflow only builds and pushes to Docker Hub (no Render deployment yet)
+# CI/CD for EMS Backend (Spring Boot 3 + Java 21 + Docker Hub)
 
 name: Build and Push TeamNest Backend to Docker Hub
 
@@ -26,8 +26,17 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      # Run tests with environment variables
       - name: Run tests
         working-directory: ./backend_spring_boot/ems_backend
+        env:
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          BASE_URL: ${{ secrets.BASE_URL }}
+          SECRET_STRING: ${{ secrets.SECRET_STRING }}
         run: |
           chmod +x ./mvnw
           ./mvnw test
