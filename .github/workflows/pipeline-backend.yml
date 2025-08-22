@@ -74,15 +74,17 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Trigger Render Deploy
+        if: success()
+        run: |
+          curl -X POST "$RENDER_DEPLOY_HOOK_URL"
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+
       - name: Success Message
         run: |
-          echo "## 🎉 Docker Image Built and Pushed!" >> $GITHUB_STEP_SUMMARY
+          echo "## Congratulations Software Architect! 😎🤩🎉 Docker Image Built, Pushed, and Render Deploy Triggered!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Image:** \`charllson717/ems-backend:latest\`" >> $GITHUB_STEP_SUMMARY
           echo "**Repository:** https://hub.docker.com/r/charllson717/ems-backend" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Next Steps:" >> $GITHUB_STEP_SUMMARY
-          echo "1. ✅ Image is now available on Docker Hub" >> $GITHUB_STEP_SUMMARY
-          echo "2. 📝 Create Render service using: \`docker.io/charllson717/ems-backend:latest\`" >> $GITHUB_STEP_SUMMARY
-          echo "3. 🔗 Get Deploy Hook URL from Render" >> $GITHUB_STEP_SUMMARY
-          echo "4. 🔐 Add RENDER_DEPLOY_HOOK_URL to GitHub Secrets" >> $GITHUB_STEP_SUMMARY
+          echo "**Render Service:** Triggered via Deploy Hook" >> $GITHUB_STEP_SUMMARY
