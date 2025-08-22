@@ -1,10 +1,11 @@
 
 // const BACKEND_BASE_URL = 'http://localhost:8080'; // dev mode
+const BACKEND_PROD_API = 'https://api.teamnest.me'
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://ems-backend-latest-k62u.onrender.com/api/v1/user-registration',
-  endapiBaseUrl: 'https://ems-backend-latest-k62u.onrender.com/api/auth',
-  onBoardingApiUrl: 'https://ems-backend-latest-k62u.onrender.com/api/user',
-  employeeApiUrl: 'https://ems-backend-latest-k62u.onrender.com/api/employee',
-  employeeRegisterApiUrl: 'https://ems-backend-latest-k62u.onrender.com/api/auth/employee',
+  apiBaseUrl: `${BACKEND_PROD_API}/api/v1/user-registration`,
+  endapiBaseUrl: `${BACKEND_PROD_API}/api/auth`,
+  onBoardingApiUrl: `${BACKEND_PROD_API}/api/user`,
+  employeeApiUrl: `${BACKEND_PROD_API}/api/employee`,
+  employeeRegisterApiUrl: `${BACKEND_PROD_API}/api/auth/employee`,
 };
