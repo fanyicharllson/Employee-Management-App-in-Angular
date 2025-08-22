@@ -46,10 +46,10 @@ public class HrLoginController {
             // Set JWT in HttpOnly Cookie
             ResponseCookie cookie = ResponseCookie.from("jwt", token)
                     .httpOnly(true)
-                    .secure(false) // Set to true in production with HTTPS
+                    .secure(true) // Secure must be true when SameSite=None for cross-site cookies
                     .path("/")
                     .maxAge(Duration.ofHours(24))
-                    .sameSite("Lax")
+                    .sameSite("None")
                     .build();
 
             Map<String, Object> responseBody = Map.of(
@@ -122,9 +122,10 @@ public class HrLoginController {
         // Clear the JWT cookie by setting an expired cookie
         ResponseCookie expiredCookie = ResponseCookie.from("jwt", "")
                 .httpOnly(true)
+                .secure(true)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite("None")
                 .build();
 
         response.setHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
